@@ -1,0 +1,13 @@
+node_modules
+.next
+.vercel
+.env
+*.local
+ygym-dump.json
+*-firebase-adminsdk*.json
+media
+dump/
+tsconfig.tsbuildinfo
+next-env.d.ts
+AGENTS.md
+CLAUDE.md

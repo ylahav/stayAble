@@ -1,0 +1,19 @@
+# pnpm 11+ reads these here, not from package.json "pnpm".
+allowBuilds:
+  sharp: true
+  esbuild: true
+  '@firebase/util': true
+  protobufjs: true
+
+# Skip re-validating every lockfile entry against the registry.
+# That pass fails on this machine (Norton MITM / UNABLE_TO_VERIFY_LEAF_SIGNATURE).
+minimumReleaseAgeExclude:
+  - '@payloadcms/translations@3.90.0'
+  - payload@3.90.0
+  - '@payloadcms/db-mongodb@3.90.0'
+  - '@payloadcms/graphql@3.90.0'
+  - '@payloadcms/next@3.90.0'
+  - '@payloadcms/ui@3.90.0'
+  - '@payloadcms/richtext-lexical@3.90.0'
+
+trustLockfile: true

@@ -1,0 +1,208 @@
+{
+  "@@locale": "en",
+  "appTitle": "StayAble",
+  "navHome": "Home",
+  "navExercises": "Exercises",
+  "navProgram": "Program",
+  "navHistory": "History",
+  "languageToggle": "Language",
+  "goodMorning": "Good morning",
+  "goodAfternoon": "Good afternoon",
+  "goodEvening": "Good evening",
+  "todaysWorkout": "Today's workout",
+  "startWorkout": "Start workout",
+  "resumeWorkout": "Resume workout",
+  "inProgress": "In progress",
+  "thisWeek": "This week",
+  "thisMonth": "This month",
+  "workouts": "Workouts",
+  "workoutTime": "Workout time",
+  "exercisesLabel": "Exercises",
+  "completion": "Completion",
+  "minutes": "minutes",
+  "minutesShort": "min",
+  "hoursMinutes": "{hours}h {minutes}m",
+  "@hoursMinutes": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "minutes": {"type": "int"}
+    }
+  },
+  "search": "Search",
+  "categoryAll": "All",
+  "categoryWarmUp": "Warm-up",
+  "categoryMobility": "Mobility",
+  "categoryStrength": "Strength",
+  "categoryCardio": "Cardio",
+  "categoryStretching": "Stretching",
+  "categoryCoolDown": "Cool-down",
+  "difficultyBeginner": "Beginner",
+  "difficultyIntermediate": "Intermediate",
+  "difficultyAdvanced": "Advanced",
+  "howToPerform": "How to perform",
+  "targetMuscles": "Target muscles",
+  "equipment": "Equipment",
+  "description": "Description",
+  "difficulty": "Difficulty",
+  "safetyNotes": "Safety notes",
+  "equipmentNone": "None",
+  "equipmentMat": "Mat",
+  "equipmentResistanceBand": "Resistance band",
+  "equipmentDumbbells": "Dumbbells",
+  "equipmentChair": "Chair",
+  "equipmentMachine": "Machine",
+  "equipmentBarbell": "Barbell",
+  "equipmentCable": "Cable",
+  "equipmentKettlebell": "Kettlebell",
+  "equipmentBench": "Bench",
+  "venueHome": "Home",
+  "venueGym": "Gym",
+  "venueBoth": "Home + gym",
+  "venueMixed": "Mixed",
+  "gymStation": "Station #{n}",
+  "@gymStation": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  },
+  "kg": "kg",
+  "load": "Load",
+  "myProgram": "My program",
+  "myPrograms": "My programs",
+  "weeklyProgram": "Weekly program",
+  "noProgramAssigned": "No program assigned yet",
+  "completed": "Completed",
+  "today": "Today",
+  "upcoming": "Upcoming",
+  "exerciseProgress": "Exercise {current} / {total}",
+  "@exerciseProgress": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "chooseExercise": "Choose an exercise",
+  "chooseAnother": "Choose another",
+  "exercisesDone": "{done} of {total} done",
+  "@exercisesDone": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "reps": "reps",
+  "sets": "sets",
+  "rest": "Rest",
+  "done": "Done",
+  "skip": "Skip",
+  "howDidYouDo": "How did you do?",
+  "effortEasy": "Easy",
+  "effortGood": "Good",
+  "effortDifficult": "Difficult",
+  "continueLabel": "Continue",
+  "history": "History",
+  "restDay": "Rest day",
+  "restDayMessage": "No workout is scheduled for today. Recover, or browse the program.",
+  "viewProgram": "View program",
+  "partiallyCompleted": "Partially completed",
+  "skipped": "Skipped",
+  "cancelled": "Cancelled",
+  "planned": "Planned",
+  "started": "Started",
+  "setNumber": "Set {n}",
+  "@setNumber": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  },
+  "seconds": "sec",
+  "noHistory": "No workouts yet. Start today's session from Home.",
+  "noExercises": "No exercises match that search.",
+  "endWorkout": "End workout",
+  "workoutComplete": "Workout complete",
+  "seeHistory": "See history",
+  "start": "Start",
+  "nextSet": "Next set",
+  "confirmSet": "Log set",
+  "weekdayMon": "Monday",
+  "weekdayTue": "Tuesday",
+  "weekdayWed": "Wednesday",
+  "weekdayThu": "Thursday",
+  "weekdayFri": "Friday",
+  "weekdaySat": "Saturday",
+  "weekdaySun": "Sunday",
+  "muscleQuadriceps": "Quadriceps",
+  "muscleGlutes": "Glutes",
+  "muscleHamstrings": "Hamstrings",
+  "muscleShoulders": "Shoulders",
+  "muscleChest": "Chest",
+  "muscleCore": "Core",
+  "muscleCalves": "Calves",
+  "muscleHipFlexors": "Hip flexors",
+  "muscleBack": "Back",
+  "muscleFullBody": "Full body",
+  "muscleCardiovascular": "Cardiovascular",
+  "muscleHipMobility": "Hips",
+  "percent": "{value}%",
+  "@percent": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "exerciseCount": "{count} exercises",
+  "@exerciseCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "prescriptionSetsReps": "{sets} × {reps}",
+  "@prescriptionSetsReps": {
+    "placeholders": {
+      "sets": {"type": "int"},
+      "reps": {"type": "int"}
+    }
+  },
+  "prescriptionDuration": "{seconds} sec",
+  "@prescriptionDuration": {
+    "placeholders": {
+      "seconds": {"type": "int"}
+    }
+  },
+  "prescriptionMinutes": "{minutes} min",
+  "@prescriptionMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "alreadyCompletedToday": "Completed today",
+  "startAgain": "Start again",
+  "exitWorkoutTitle": "End this workout?",
+  "exitWorkoutBody": "Unfinished exercises will be saved as a partial session.",
+  "cancel": "Cancel",
+  "savePartial": "Save partial",
+  "close": "Close",
+  "loginTitle": "Log in to train",
+  "loginLead": "Athletes only. Use the same email and password as the StayAble website.",
+  "loginEmail": "Email",
+  "loginPassword": "Password",
+  "loginEmailRequired": "Enter your email",
+  "loginPasswordRequired": "Enter your password",
+  "loginAction": "Log in",
+  "loginSubmitting": "Signing in…",
+  "loginErrorCredentials": "Email or password is wrong.",
+  "loginErrorNotAthlete": "This app is for athletes. Trainers and admins use the website.",
+  "loginErrorInactive": "This account is inactive.",
+  "loginErrorNetwork": "Cannot reach the server. Is the backend running?",
+  "loginErrorUnknown": "Could not sign in. Try again.",
+  "loginErrorServer": "Enter a valid server address, like https://gym.example.com",
+  "logOut": "Log out",
+  "settingsTitle": "Settings",
+  "serverUrl": "Backend site",
+  "serverUrlHint": "HTTPS address of the StayAble site. Workout results are stored there.",
+  "serverUrlRequired": "Enter the backend site address",
+  "serverSave": "Save address",
+  "serverSaved": "Saved. New workouts will sync to this site.",
+  "completeExercise": "Complete",
+  "addNote": "Add note",
+  "exerciseNoteHint": "How it felt, what to change next time…"
+}

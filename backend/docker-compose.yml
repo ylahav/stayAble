@@ -1,0 +1,13 @@
+# Local Mongo only. On the existing host, point DATABASE_URI at the
+# Mongo you already run and skip this file. Use a dedicated database name.
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - '27017:27017'
+    volumes:
+      - stayable-mongo:/data/db
+    command: ['mongod', '--quiet']
+
+volumes:
+  stayable-mongo:

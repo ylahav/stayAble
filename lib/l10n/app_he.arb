@@ -1,0 +1,208 @@
+{
+  "@@locale": "he",
+  "appTitle": "יכולת",
+  "navHome": "בית",
+  "navExercises": "תרגילים",
+  "navProgram": "תוכנית",
+  "navHistory": "היסטוריה",
+  "languageToggle": "שפה",
+  "goodMorning": "בוקר טוב",
+  "goodAfternoon": "צהריים טובים",
+  "goodEvening": "ערב טוב",
+  "todaysWorkout": "האימון להיום",
+  "startWorkout": "התחל אימון",
+  "resumeWorkout": "המשך אימון",
+  "inProgress": "בתהליך",
+  "thisWeek": "השבוע",
+  "thisMonth": "החודש",
+  "workouts": "אימונים",
+  "workoutTime": "זמן אימון",
+  "exercisesLabel": "תרגילים",
+  "completion": "השלמה",
+  "minutes": "דקות",
+  "minutesShort": "דק׳",
+  "hoursMinutes": "{hours}ש׳ {minutes}דק׳",
+  "@hoursMinutes": {
+    "placeholders": {
+      "hours": {"type": "int"},
+      "minutes": {"type": "int"}
+    }
+  },
+  "search": "חיפוש",
+  "categoryAll": "הכל",
+  "categoryWarmUp": "חימום",
+  "categoryMobility": "מוביליטי",
+  "categoryStrength": "כוח",
+  "categoryCardio": "אירובי",
+  "categoryStretching": "מתיחות",
+  "categoryCoolDown": "שחרור",
+  "difficultyBeginner": "מתחיל",
+  "difficultyIntermediate": "בינוני",
+  "difficultyAdvanced": "מתקדם",
+  "howToPerform": "איך לבצע",
+  "targetMuscles": "שרירים יעד",
+  "equipment": "ציוד",
+  "description": "תיאור",
+  "difficulty": "רמה",
+  "safetyNotes": "הערות בטיחות",
+  "equipmentNone": "ללא",
+  "equipmentMat": "מזרן",
+  "equipmentResistanceBand": "גומיית התנגדות",
+  "equipmentDumbbells": "משקולות",
+  "equipmentChair": "כיסא",
+  "equipmentMachine": "מכונה",
+  "equipmentBarbell": "מוט",
+  "equipmentCable": "כבל",
+  "equipmentKettlebell": "קטלבל",
+  "equipmentBench": "ספסל",
+  "venueHome": "בית",
+  "venueGym": "אולם",
+  "venueBoth": "בית + אולם",
+  "venueMixed": "משולב",
+  "gymStation": "עמדה #{n}",
+  "@gymStation": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  },
+  "kg": "ק״ג",
+  "load": "משקל",
+  "myProgram": "התוכנית שלי",
+  "myPrograms": "התוכניות שלי",
+  "weeklyProgram": "תוכנית שבועית",
+  "noProgramAssigned": "עדיין לא שובצה תוכנית",
+  "completed": "הושלם",
+  "today": "היום",
+  "upcoming": "בקרוב",
+  "exerciseProgress": "תרגיל {current} / {total}",
+  "@exerciseProgress": {
+    "placeholders": {
+      "current": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "chooseExercise": "בחר תרגיל",
+  "chooseAnother": "בחר תרגיל אחר",
+  "exercisesDone": "{done} מתוך {total} הושלמו",
+  "@exercisesDone": {
+    "placeholders": {
+      "done": {"type": "int"},
+      "total": {"type": "int"}
+    }
+  },
+  "reps": "חזרות",
+  "sets": "סטים",
+  "rest": "מנוחה",
+  "done": "סיימתי",
+  "skip": "דלג",
+  "howDidYouDo": "איך היה לך?",
+  "effortEasy": "קל",
+  "effortGood": "טוב",
+  "effortDifficult": "קשה",
+  "continueLabel": "המשך",
+  "history": "היסטוריה",
+  "restDay": "יום מנוחה",
+  "restDayMessage": "אין אימון מתוכנן להיום. אפשר לנוח או לעיין בתוכנית.",
+  "viewProgram": "לצפייה בתוכנית",
+  "partiallyCompleted": "הושלם חלקית",
+  "skipped": "דולג",
+  "cancelled": "בוטל",
+  "planned": "מתוכנן",
+  "started": "התחיל",
+  "setNumber": "סט {n}",
+  "@setNumber": {
+    "placeholders": {
+      "n": {"type": "int"}
+    }
+  },
+  "seconds": "שנ׳",
+  "noHistory": "עדיין אין אימונים. התחילו את האימון מהמסך הראשי.",
+  "noExercises": "אין תרגילים שתואמים לחיפוש.",
+  "endWorkout": "סיים אימון",
+  "workoutComplete": "האימון הושלם",
+  "seeHistory": "לצפייה בהיסטוריה",
+  "start": "התחל",
+  "nextSet": "סט הבא",
+  "confirmSet": "רשום סט",
+  "weekdayMon": "שני",
+  "weekdayTue": "שלישי",
+  "weekdayWed": "רביעי",
+  "weekdayThu": "חמישי",
+  "weekdayFri": "שישי",
+  "weekdaySat": "שבת",
+  "weekdaySun": "ראשון",
+  "muscleQuadriceps": "ארבע ראשי",
+  "muscleGlutes": "ישבן",
+  "muscleHamstrings": "המסטרינג",
+  "muscleShoulders": "כתפיים",
+  "muscleChest": "חזה",
+  "muscleCore": "ליבה",
+  "muscleCalves": "שוקיים",
+  "muscleHipFlexors": "מכופפי ירך",
+  "muscleBack": "גב",
+  "muscleFullBody": "כל הגוף",
+  "muscleCardiovascular": "סיבולת לב־ריאה",
+  "muscleHipMobility": "ירכיים",
+  "percent": "{value}%",
+  "@percent": {
+    "placeholders": {
+      "value": {"type": "int"}
+    }
+  },
+  "exerciseCount": "{count} תרגילים",
+  "@exerciseCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "prescriptionSetsReps": "{sets} × {reps}",
+  "@prescriptionSetsReps": {
+    "placeholders": {
+      "sets": {"type": "int"},
+      "reps": {"type": "int"}
+    }
+  },
+  "prescriptionDuration": "{seconds} שנ׳",
+  "@prescriptionDuration": {
+    "placeholders": {
+      "seconds": {"type": "int"}
+    }
+  },
+  "prescriptionMinutes": "{minutes} דק׳",
+  "@prescriptionMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  },
+  "alreadyCompletedToday": "הושלם היום",
+  "startAgain": "התחל שוב",
+  "exitWorkoutTitle": "לסיים את האימון?",
+  "exitWorkoutBody": "תרגילים שלא הושלמו יישמרו כאימון חלקי.",
+  "cancel": "ביטול",
+  "savePartial": "שמור חלקי",
+  "close": "סגור",
+  "loginTitle": "התחברו כדי להתאמן",
+  "loginLead": "לספורטאים בלבד. אותו אימייל וסיסמה כמו באתר StayAble.",
+  "loginEmail": "אימייל",
+  "loginPassword": "סיסמה",
+  "loginEmailRequired": "הזינו אימייל",
+  "loginPasswordRequired": "הזינו סיסמה",
+  "loginAction": "התחברות",
+  "loginSubmitting": "מתחברים…",
+  "loginErrorCredentials": "אימייל או סיסמה שגויים.",
+  "loginErrorNotAthlete": "האפליקציה לספורטאים. מאמנים ומנהלים נכנסים באתר.",
+  "loginErrorInactive": "החשבון אינו פעיל.",
+  "loginErrorNetwork": "אין חיבור לשרת. האם ה־backend רץ?",
+  "loginErrorUnknown": "ההתחברות נכשלה. נסו שוב.",
+  "loginErrorServer": "הזינו כתובת שרת תקינה, למשל https://gym.example.com",
+  "logOut": "התנתקות",
+  "settingsTitle": "הגדרות",
+  "serverUrl": "אתר השרת",
+  "serverUrlHint": "כתובת HTTPS של אתר StayAble. תוצאות האימון נשמרות שם.",
+  "serverUrlRequired": "הזינו את כתובת אתר השרת",
+  "serverSave": "שמירת כתובת",
+  "serverSaved": "נשמר. אימונים חדשים יסונכרנו לאתר זה.",
+  "completeExercise": "סיום",
+  "addNote": "הוסף הערה",
+  "exerciseNoteHint": "איך הרגשת, מה לשנות בפעם הבאה…"
+}
