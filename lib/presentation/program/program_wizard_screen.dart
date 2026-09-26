@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:plinth_blocks/plinth_blocks.dart';
 
 import '../../core/l10n/labels.dart';
-import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/stayable_async.dart';
 import '../../domain/domain.dart';
 import '../../l10n/app_localizations.dart';
@@ -178,14 +177,7 @@ class _ProgramWizardScreenState extends ConsumerState<ProgramWizardScreen> {
         icon: const Icon(Icons.arrow_back),
         onPressed: _back,
       ),
-      actions: const [LanguageToggle()],
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          PlinthSpacing.lg,
-          PlinthSpacing.sm,
-          PlinthSpacing.lg,
-          PlinthSpacing.xl,
-        ),
+      body: StayAbleScrollBody(
         children: [
           PlinthText(l10n.wizardStepOf(index + 1, steps.length), color: 'gray'),
           const PlinthSpace(h: PlinthSize.xs),
@@ -624,16 +616,9 @@ class _GenerateFromProfileScreenState
         icon: const Icon(Icons.arrow_back),
         onPressed: () => context.pop(),
       ),
-      actions: const [LanguageToggle()],
       body: _error == null
           ? const StayAbleLoading()
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(
-                PlinthSpacing.lg,
-                PlinthSpacing.sm,
-                PlinthSpacing.lg,
-                PlinthSpacing.xl,
-              ),
+          : StayAbleScrollBody(
               children: [
                 PlinthAlert(color: 'red', child: Text(_error!)),
                 const PlinthSpace(h: PlinthSize.md),

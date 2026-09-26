@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 
+import { localizedToLexical } from '../lib/richText'
 import { ensureExerciseMedia } from './media'
 import { aerobicExercises } from './aerobic-20min'
 import { fullBodyPlanExercises } from './full-body-plan'
@@ -455,9 +456,10 @@ export async function seedExerciseCatalog(payload: Payload): Promise<void> {
     } catch (err) {
       payload.logger.error({ err, clientId: exercise.clientId }, 'Could not attach exercise photo')
     }
-    const { photo, ...fields } = exercise
+    const { photo, instructions, ...fields } = exercise
     const data = {
       ...fields,
+      instructions: localizedToLexical(instructions),
       venue: exercise.venue ?? 'both',
       workoutType: resolveWorkoutType(exercise),
       photoPath: photo,

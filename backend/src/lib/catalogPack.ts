@@ -7,6 +7,7 @@ import type { Payload, PayloadRequest, Where } from 'payload'
 import { isStaff, type AuthedUser } from '@/access/roles'
 import { relId } from '@/lib/relations'
 import type { PackMedia } from '@/lib/pack'
+import { localizedToHtml } from '@/lib/richText'
 
 export const CATALOG_KIND = 'stayable-catalog' as const
 export const CATALOG_VERSION = 1 as const
@@ -33,9 +34,8 @@ export type CatalogCounts = {
 type Doc = { id: string } & Record<string, unknown>
 
 function loc(value: unknown): { en: string; he: string } {
-  const group = value as { en?: string | null; he?: string | null } | null
-  const en = group?.en?.trim() || group?.he?.trim() || '—'
-  return { en, he: group?.he || '' }
+  const html = localizedToHtml(value)
+  return { en: html.en || html.he || '—', he: html.he }
 }
 
 function emptyCounts(): CatalogCounts {

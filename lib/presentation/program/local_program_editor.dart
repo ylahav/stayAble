@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:plinth_blocks/plinth_blocks.dart';
 
 import '../../core/l10n/labels.dart';
-import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/stayable_async.dart';
 import '../../domain/domain.dart';
 import '../../l10n/app_localizations.dart';
@@ -233,16 +232,9 @@ class _LocalProgramEditorScreenState
         icon: const Icon(Icons.arrow_back),
         onPressed: () => context.pop(),
       ),
-      actions: const [LanguageToggle()],
       body: _loading
           ? const StayAbleLoading()
-          : ListView(
-              padding: const EdgeInsets.fromLTRB(
-                PlinthSpacing.lg,
-                PlinthSpacing.sm,
-                PlinthSpacing.lg,
-                PlinthSpacing.xl,
-              ),
+          : StayAbleScrollBody(
               children: [
                 if (_error != null)
                   PlinthAlert(color: 'red', child: Text(_error!)),

@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 import '../../core/l10n/labels.dart';
 import '../../core/widgets/exercise_photo.dart';
 import '../../core/widgets/language_toggle.dart';
+import '../../core/widgets/stayable_html.dart';
 import '../../domain/domain.dart';
 
 Future<void> showExercisePreview({
@@ -32,10 +33,7 @@ class ExercisePreviewSheet extends StatelessWidget {
     final locale = Localizations.localeOf(context);
     final exercise = item.exercise;
     final description = localizedName(exercise.description, locale);
-    final steps = localizedName(exercise.instructions, locale)
-        .split('\n')
-        .where((s) => s.trim().isNotEmpty)
-        .toList();
+    final instructions = localizedName(exercise.instructions, locale);
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -66,14 +64,9 @@ class ExercisePreviewSheet extends StatelessWidget {
                     PlinthTitle(l10n.description, order: 5),
                     PlinthText(description),
                   ],
-                  if (steps.isNotEmpty) ...[
+                  if (instructions.trim().isNotEmpty) ...[
                     PlinthTitle(l10n.howToPerform, order: 5),
-                    PlinthList(
-                      type: PlinthListType.ordered,
-                      items: [
-                        for (final step in steps) PlinthListItem(Text(step)),
-                      ],
-                    ),
+                    StayAbleInstructions(text: instructions),
                   ],
                 ],
               ),

@@ -5,7 +5,6 @@ import 'package:plinth_blocks/plinth_blocks.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../core/l10n/labels.dart';
-import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/stayable_async.dart';
 import '../../data/remote/session_store.dart';
 import '../../domain/domain.dart';
@@ -31,7 +30,6 @@ class _ProgramScreenState extends ConsumerState<ProgramScreen> {
     return StayAblePage(
       title: l10n.myPrograms,
       actions: [
-        const LanguageToggle(),
         if (isLocal)
           PlinthActionIcon(
             semanticLabel: l10n.createProgram,
@@ -44,22 +42,10 @@ class _ProgramScreenState extends ConsumerState<ProgramScreen> {
         error: (e, _) => StayAbleError(message: e),
         data: (snap) {
           if (snap.programs.isEmpty) {
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(
-                PlinthSpacing.lg,
-                PlinthSpacing.sm,
-                PlinthSpacing.lg,
-                PlinthSpacing.xl,
-              ),
-              children: [
-                PlinthEmptyState(
-                  title: isLocal ? l10n.noProgramLocal : l10n.noProgramAssigned,
-                ),
-                if (isLocal) ...[
-                  const PlinthSpace(h: PlinthSize.md),
-                  _CreateProgramButton(l10n: l10n),
-                ],
-              ],
+            return StayAbleEmpty(
+              icon: const Icon(Icons.calendar_view_week_outlined),
+              title: isLocal ? l10n.noProgramLocal : l10n.noProgramAssigned,
+              action: isLocal ? _CreateProgramButton(l10n: l10n) : null,
             );
           }
           final todayWeekday = DateTime.now().weekday;
@@ -74,13 +60,7 @@ class _ProgramScreenState extends ConsumerState<ProgramScreen> {
                   .firstOrNull ??
               snap.programs.first.program.id;
 
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(
-              PlinthSpacing.lg,
-              PlinthSpacing.sm,
-              PlinthSpacing.lg,
-              PlinthSpacing.xl,
-            ),
+          return StayAbleScrollBody(
             children: [
               if (isLocal) ...[
                 _CreateProgramButton(l10n: l10n),

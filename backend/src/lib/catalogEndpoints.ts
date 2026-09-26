@@ -1,4 +1,4 @@
-import type { CollectionConfig, Endpoint, Payload, PayloadRequest } from 'payload'
+import type { CollectionConfig, Endpoint, Payload, PayloadRequest, Where } from 'payload'
 
 import {
   catalogFilename,
@@ -7,6 +7,7 @@ import {
   parseCatalogPack,
   type CatalogCollection,
 } from '@/lib/catalogPack'
+import { localizedToHtml } from '@/lib/richText'
 
 function jsonError(error: string, status: number) {
   return Response.json({ error }, { status })
@@ -62,7 +63,7 @@ function importHandler(): Endpoint['handler'] {
   }
 }
 
-const publicCatalogWhere = {
+const publicCatalogWhere: Where = {
   and: [{ active: { equals: true } }, { deleted: { not_equals: true } }],
 }
 
@@ -76,7 +77,12 @@ export async function loadPublicCatalog(payload: Payload) {
     sort: 'clientId',
     where: publicCatalogWhere,
   })
-  return { docs: result.docs }
+  return {
+    docs: result.docs.map((doc) => ({
+      ...doc,
+      instructions: localizedToHtml(doc.instructions),
+    })),
+  }
 }
 
 export async function loadPublicCatalogStatus(payload: Payload) {

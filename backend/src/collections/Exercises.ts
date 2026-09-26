@@ -2,8 +2,9 @@ import type { CollectionConfig } from 'payload'
 
 import { authenticated, staffOnly } from '../access/roles'
 import { withCatalogTransfer } from '../lib/catalogEndpoints'
-import { adminTitleField, clientIdField, deletedField, localizedTextFields } from '../fields/sync'
+import { adminTitleField, clientIdField, deletedField, localizedRichTextFields, localizedTextFields } from '../fields/sync'
 import { exerciseName } from '../lib/adminTitle'
+import { localizedToLexical } from '../lib/richText'
 import { stripLoopbackOrigin } from '../lib/publicOrigin'
 
 export const Exercises: CollectionConfig = withCatalogTransfer({
@@ -29,7 +30,14 @@ export const Exercises: CollectionConfig = withCatalogTransfer({
     deletedField,
     { name: 'name', type: 'group', fields: localizedTextFields },
     { name: 'description', type: 'group', fields: localizedTextFields },
-    { name: 'instructions', type: 'group', fields: localizedTextFields },
+    {
+      name: 'instructions',
+      type: 'group',
+      admin: {
+        description: 'Formatted steps shown in the app.',
+      },
+      fields: localizedRichTextFields,
+    },
     { name: 'safetyNotes', type: 'group', fields: localizedTextFields },
     {
       name: 'image',
@@ -129,6 +137,9 @@ export const Exercises: CollectionConfig = withCatalogTransfer({
   hooks: {
     beforeChange: [
       ({ data, originalDoc }) => {
+        if (data.instructions != null) {
+          data.instructions = localizedToLexical(data.instructions)
+        }
         data.adminTitle =
           exerciseName(data.name) ||
           exerciseName(originalDoc?.name) ||
@@ -141,6 +152,9 @@ export const Exercises: CollectionConfig = withCatalogTransfer({
       ({ doc }) => {
         if (typeof doc.photoPath === 'string') {
           doc.photoPath = stripLoopbackOrigin(doc.photoPath)
+        }
+        if (doc.instructions != null) {
+          doc.instructions = localizedToLexical(doc.instructions)
         }
         doc.adminTitle = exerciseName(doc.name) || doc.clientId
         return doc

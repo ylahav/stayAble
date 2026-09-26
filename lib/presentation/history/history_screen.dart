@@ -6,7 +6,6 @@ import 'package:plinth_charts/plinth_charts.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../core/l10n/labels.dart';
-import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/note_composer.dart';
 import '../../core/widgets/stayable_async.dart';
 import '../../domain/domain.dart';
@@ -25,19 +24,12 @@ class HistoryScreen extends ConsumerWidget {
 
     return StayAblePage(
       title: l10n.history,
-      actions: const [LanguageToggle()],
       body: async.when(
         loading: () => const StayAbleLoading(),
         error: (e, _) => StayAbleError(message: e),
         data: (snap) {
           final format = DateFormat.MMMd(locale.toLanguageTag());
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(
-              PlinthSpacing.lg,
-              PlinthSpacing.sm,
-              PlinthSpacing.lg,
-              PlinthSpacing.xl,
-            ),
+          return StayAbleScrollBody(
             children: [
               PlinthTitle(l10n.thisWeek, order: 3),
               const PlinthSpace(h: PlinthSize.sm),
@@ -95,7 +87,8 @@ class HistoryScreen extends ConsumerWidget {
               ),
               const PlinthSpace(h: PlinthSize.lg),
               if (snap.sessions.isEmpty)
-                PlinthEmptyState(
+                StayAbleEmpty(
+                  scroll: false,
                   icon: const Icon(Icons.history_outlined),
                   title: l10n.noHistory,
                 )

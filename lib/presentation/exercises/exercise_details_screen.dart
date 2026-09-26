@@ -5,8 +5,8 @@ import 'package:plinth_blocks/plinth_blocks.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/l10n/labels.dart';
 import '../../core/widgets/exercise_photo.dart';
-import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/stayable_async.dart';
+import '../../core/widgets/stayable_html.dart';
 import '../providers.dart';
 
 class ExerciseDetailsScreen extends ConsumerWidget {
@@ -22,25 +22,14 @@ class ExerciseDetailsScreen extends ConsumerWidget {
 
     return StayAblePage(
       title: l10n.exercisesLabel,
-      actions: const [LanguageToggle()],
       body: async.when(
         loading: () => const StayAbleLoading(),
         error: (e, _) => StayAbleError(message: e),
         data: (exercise) {
           if (exercise == null) {
-            return PlinthEmptyState(title: l10n.noExercises);
+            return StayAbleEmpty(title: l10n.noExercises);
           }
-          final steps = localizedName(exercise.instructions, locale)
-              .split('\n')
-              .where((s) => s.trim().isNotEmpty)
-              .toList();
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(
-              PlinthSpacing.lg,
-              PlinthSpacing.sm,
-              PlinthSpacing.lg,
-              PlinthSpacing.xl,
-            ),
+          return StayAbleScrollBody(
             children: [
               ExercisePhoto(
                 photo: exercise.photo,
@@ -67,11 +56,8 @@ class ExerciseDetailsScreen extends ConsumerWidget {
               const PlinthSpace(h: PlinthSize.md),
               PlinthTitle(l10n.howToPerform, order: 4),
               const PlinthSpace(h: PlinthSize.xs),
-              PlinthList(
-                type: PlinthListType.ordered,
-                items: [
-                  for (final step in steps) PlinthListItem(Text(step)),
-                ],
+              StayAbleInstructions(
+                text: localizedName(exercise.instructions, locale),
               ),
               const PlinthSpace(h: PlinthSize.md),
               PlinthTitle(l10n.targetMuscles, order: 4),

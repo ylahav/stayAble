@@ -6,7 +6,6 @@ import 'package:plinth_blocks/plinth_blocks.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/l10n/labels.dart';
 import '../../core/widgets/exercise_photo.dart';
-import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/stayable_async.dart';
 import '../../domain/domain.dart';
 import '../providers.dart';
@@ -47,7 +46,6 @@ class ExercisesScreen extends ConsumerWidget {
               onPressed: () => context.pop(),
             )
           : null,
-      actions: const [LanguageToggle()],
       below: PlinthStack(
         gap: PlinthSize.sm,
         children: [
@@ -130,18 +128,13 @@ class ExercisesScreen extends ConsumerWidget {
         error: (e, _) => StayAbleError(message: e),
         data: (items) {
           if (items.isEmpty) {
-            return PlinthEmptyState(
+            return StayAbleEmpty(
               icon: const Icon(Icons.fitness_center_outlined),
               title: l10n.noExercises,
             );
           }
           return ListView.separated(
-            padding: const EdgeInsets.fromLTRB(
-              PlinthSpacing.lg,
-              PlinthSpacing.sm,
-              PlinthSpacing.lg,
-              PlinthSpacing.xl,
-            ),
+            padding: StayAbleScrollBody.padding,
             itemCount: items.length,
             separatorBuilder: (context, index) =>
                 const PlinthSpace(h: PlinthSize.sm),

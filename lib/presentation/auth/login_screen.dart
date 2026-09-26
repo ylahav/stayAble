@@ -124,8 +124,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             alignment: AlignmentDirectional.centerEnd,
             child: LanguageToggle(),
           ),
-          PlinthTitle(l10n.appTitle, order: 1),
-          PlinthText(lead, color: 'gray'),
+          PlinthHeroBlock(
+            headline: l10n.appTitle,
+            subhead: lead,
+            headlineOrder: 1,
+            eyebrow: const Icon(Icons.fitness_center),
+          ),
           if (!isLocal && server.hasValue)
             PlinthText(server.requireValue, color: 'gray', size: PlinthSize.sm),
           const PlinthSpace(h: PlinthSize.lg),
@@ -186,14 +190,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
           ),
-          if (isLocal) ...[
-            const PlinthSpace(h: PlinthSize.md),
-            PlinthButton(
-              variant: PlinthVariant.subtle,
-              onPressed: () => ref.read(authProvider.notifier).resetSetup(),
-              child: Text(l10n.changeSetup),
-            ),
-          ],
+          const PlinthSpace(h: PlinthSize.md),
+          PlinthButton(
+            variant: PlinthVariant.subtle,
+            onPressed: () => ref.read(authProvider.notifier).resetSetup(),
+            child: Text(l10n.changeSetup),
+          ),
           const AppVersionLabel(),
         ],
       ),

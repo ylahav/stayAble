@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { isStaff } from '@/access/roles'
 import { getCurrentUser, getPayloadClient } from '@/lib/auth'
 import { parseExerciseJson, validateExerciseDraft, type DraftIssue } from '@/lib/exerciseImport'
+import { localizedToLexical } from '@/lib/richText'
 
 export type ImportExercisesResult = {
   error?: string
@@ -55,12 +56,14 @@ export async function importExercises(raw: string): Promise<ImportExercisesResul
     }
 
     try {
+      const { instructions, ...fields } = draft
       await payload.create({
         collection: 'exercises',
         user,
         overrideAccess: false,
         data: {
-          ...draft,
+          ...fields,
+          instructions: localizedToLexical(instructions),
           active: false,
           deleted: false,
         },

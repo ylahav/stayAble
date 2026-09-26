@@ -1,4 +1,5 @@
 import '../../domain/domain.dart';
+import 'rich_text.dart';
 
 T _enum<T extends Enum>(List<T> values, Object? raw, T fallback) {
   if (raw is! String) return fallback;
@@ -11,8 +12,8 @@ T _enum<T extends Enum>(List<T> values, Object? raw, T fallback) {
 LocalizedText _text(Object? raw) {
   if (raw is Map) {
     return LocalizedText(
-      en: raw['en'] as String? ?? '',
-      he: raw['he'] as String? ?? '',
+      en: fieldToHtml(raw['en']),
+      he: fieldToHtml(raw['he']),
     );
   }
   return const LocalizedText(en: '', he: '');

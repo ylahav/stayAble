@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:plinth_blocks/plinth_blocks.dart';
 
+import '../../core/ui/stayable_ui.dart';
 import '../../core/widgets/app_version_label.dart';
 import '../../core/widgets/language_toggle.dart';
 import '../../data/remote/session_store.dart';
@@ -121,8 +122,12 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
             alignment: AlignmentDirectional.centerEnd,
             child: LanguageToggle(),
           ),
-          PlinthTitle(l10n.appTitle, order: 1),
-          PlinthText(l10n.setupLead, color: 'gray'),
+          PlinthHeroBlock(
+            headline: l10n.appTitle,
+            subhead: l10n.setupLead,
+            headlineOrder: 1,
+            eyebrow: const Icon(Icons.fitness_center),
+          ),
           const PlinthSpace(h: PlinthSize.lg),
           if (_error != null) PlinthAlert(color: 'red', child: Text(_error!)),
           switch (_path) {
@@ -130,27 +135,25 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                 gap: PlinthSize.md,
                 children: [
                   PlinthTitle(l10n.setupTitle, order: 2),
-                  PlinthCard(
-                    withBorder: true,
-                    header: PlinthTitle(l10n.modeLocalTitle, order: 3),
-                    footer: PlinthButton(
+                  StayAbleChoiceCard(
+                    title: l10n.modeLocalTitle,
+                    lead: l10n.modeLocalLead,
+                    action: PlinthButton(
                       fullWidth: true,
                       onPressed: _chooseStandalone,
                       child: Text(l10n.modeLocalAction),
                     ),
-                    child: PlinthText(l10n.modeLocalLead, color: 'gray'),
                   ),
-                  PlinthCard(
-                    withBorder: true,
-                    header: PlinthTitle(l10n.modeTrainerTitle, order: 3),
-                    footer: PlinthButton(
+                  StayAbleChoiceCard(
+                    title: l10n.modeTrainerTitle,
+                    lead: l10n.modeTrainerLead,
+                    action: PlinthButton(
                       fullWidth: true,
                       variant: PlinthVariant.outline,
                       onPressed: () =>
                           setState(() => _path = _SetupPath.network),
                       child: Text(l10n.modeTrainerAction),
                     ),
-                    child: PlinthText(l10n.modeTrainerLead, color: 'gray'),
                   ),
                 ],
               ),
@@ -164,26 +167,24 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                   ),
                   PlinthTitle(l10n.setupLocalLoginTitle, order: 2),
                   PlinthText(l10n.setupLocalLoginLead, color: 'gray'),
-                  PlinthCard(
-                    withBorder: true,
-                    header: PlinthTitle(l10n.setupLocalLoginYesTitle, order: 3),
-                    footer: PlinthAsyncButton(
+                  StayAbleChoiceCard(
+                    title: l10n.setupLocalLoginYesTitle,
+                    lead: l10n.setupLocalLoginYesLead,
+                    action: PlinthAsyncButton(
                       fullWidth: true,
                       onPressed: _chooseLocalWithLogin,
                       child: Text(l10n.setupLocalLoginYesAction),
                     ),
-                    child: PlinthText(l10n.setupLocalLoginYesLead, color: 'gray'),
                   ),
-                  PlinthCard(
-                    withBorder: true,
-                    header: PlinthTitle(l10n.setupLocalLoginNoTitle, order: 3),
-                    footer: PlinthAsyncButton(
+                  StayAbleChoiceCard(
+                    title: l10n.setupLocalLoginNoTitle,
+                    lead: l10n.setupLocalLoginNoLead,
+                    action: PlinthAsyncButton(
                       fullWidth: true,
                       variant: PlinthVariant.outline,
                       onPressed: _chooseLocalWithoutLogin,
                       child: Text(l10n.setupLocalLoginNoAction),
                     ),
-                    child: PlinthText(l10n.setupLocalLoginNoLead, color: 'gray'),
                   ),
                 ],
               ),

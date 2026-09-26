@@ -4,6 +4,8 @@ import path from 'path'
 
 import type { Payload, Where } from 'payload'
 
+import { localizedToHtml } from '@/lib/richText'
+
 export const PACK_VERSION = 1 as const
 
 export type PackCounts = {
@@ -81,9 +83,8 @@ function workoutTypeFromCategory(category: unknown): 'strength' | 'aerobic' | 'h
 }
 
 function loc(value: unknown): { en: string; he: string } {
-  const group = value as { en?: string | null; he?: string | null } | null
-  const en = group?.en?.trim() || group?.he?.trim() || '—'
-  return { en, he: group?.he || '' }
+  const html = localizedToHtml(value)
+  return { en: html.en || html.he || '—', he: html.he }
 }
 
 function mapPackExercise(

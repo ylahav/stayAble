@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --port 3000",
-    "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
+    "build": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap && next build",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start --port 3000",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
@@ -26,6 +26,9 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "sharp": "^0.35.4"
+  },
+  "optionalDependencies": {
+    "@img/sharp-win32-x64": "0.35.4"
   },
   "devDependencies": {
     "@types/node": "^26.6.2",

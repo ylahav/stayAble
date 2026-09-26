@@ -31,13 +31,18 @@ class AppShell extends StatelessWidget {
       );
     }
 
+    final tools = <Widget>[
+      const LanguageToggle(),
+      PlinthActionIcon(
+        semanticLabel: l10n.settingsTitle,
+        icon: const Icon(Icons.settings_outlined),
+        onPressed: () => context.push('/settings'),
+      ),
+    ];
+
     final sidebar = PlinthSidebar(
       activeValue: active,
       onSelect: go,
-      header: const Padding(
-        padding: EdgeInsets.all(PlinthSpacing.md),
-        child: LanguageToggle(),
-      ),
       sections: [
         PlinthNavSection(
           items: [
@@ -54,30 +59,45 @@ class AppShell extends StatelessWidget {
     );
 
     return Scaffold(
-      body: PlinthAppShell(
-        navbarCollapsed: !wide,
-        footerHeight: 76,
-        navbar: sidebar,
-        footer: wide
-            ? null
-            : PlinthPaper(
-                withBorder: true,
-                p: PlinthSize.xs,
-                child: Row(
-                  children: [
-                    for (final dest in destinations)
-                      Expanded(
-                        child: PlinthNavLink(
-                          label: dest.label,
-                          leadingIcon: Icon(dest.icon, size: 20),
-                          active: dest.value == active,
-                          onTap: () => go(dest.value),
-                        ),
+      body: Column(
+        children: [
+          const PlinthAccentBar(color: 'green', height: 6),
+          PlinthTopBar(
+            brand: PlinthTopBarBrand(
+              title: l10n.appTitle,
+              icon: const Icon(Icons.fitness_center),
+              onTap: () => go('home'),
+            ),
+            actions: tools,
+          ),
+          Expanded(
+            child: PlinthAppShell(
+              navbarCollapsed: !wide,
+              footerHeight: 76,
+              navbar: sidebar,
+              footer: wide
+                  ? null
+                  : PlinthPaper(
+                      withBorder: true,
+                      p: PlinthSize.xs,
+                      child: Row(
+                        children: [
+                          for (final dest in destinations)
+                            Expanded(
+                              child: PlinthNavLink(
+                                label: dest.label,
+                                leadingIcon: Icon(dest.icon, size: 20),
+                                active: dest.value == active,
+                                onTap: () => go(dest.value),
+                              ),
+                            ),
+                        ],
                       ),
-                  ],
-                ),
-              ),
-        child: navigationShell,
+                    ),
+              child: navigationShell,
+            ),
+          ),
+        ],
       ),
     );
   }

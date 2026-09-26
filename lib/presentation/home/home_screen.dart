@@ -6,7 +6,6 @@ import 'package:plinth_blocks/plinth_blocks.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/l10n/labels.dart';
 import '../../core/widgets/app_version_label.dart';
-import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/stayable_async.dart';
 import '../../data/remote/catalog_check.dart';
 import '../../domain/domain.dart';
@@ -22,22 +21,7 @@ class HomeScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final async = ref.watch(homeSnapshotProvider);
     return StayAblePage(
-      title: l10n.appTitle,
-      subtitle: greeting(l10n, DateTime.now()),
-      actions: [
-        const LanguageToggle(),
-        PlinthActionIcon(
-          semanticLabel: l10n.settingsTitle,
-          icon: const Icon(Icons.settings_outlined),
-          onPressed: () => context.push('/settings'),
-        ),
-        if ((ref.watch(authProvider).value?.token.isNotEmpty ?? false))
-          PlinthActionIcon(
-            semanticLabel: l10n.logOut,
-            icon: const Icon(Icons.logout),
-            onPressed: () => ref.read(authProvider.notifier).logout(),
-          ),
-      ],
+      title: greeting(l10n, DateTime.now()),
       body: async.when(
         loading: () => const StayAbleLoading(),
         error: (e, _) => StayAbleError(message: e),
@@ -57,76 +41,175 @@ class _HomeBody extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
     final inProgressId = snapshot.inProgress?.session.id;
-
     final catalogUpdate = ref.watch(catalogUpdateProvider);
+    final extras = snapshot.todayWorkouts.length > 1
+        ? snapshot.todayWorkouts.sublist(1)
+        : const <TodayWorkout>[];
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        PlinthSpacing.lg,
-        PlinthSpacing.sm,
-        PlinthSpacing.lg,
-        PlinthSpacing.xl,
-      ),
+    return StayAbleScrollBody(
       children: [
         if (catalogUpdate.available) ...[
           _CatalogUpdateCard(update: catalogUpdate),
           const PlinthSpace(h: PlinthSize.md),
         ],
-        if (snapshot.hasInProgress) _ContinueCard(info: snapshot.inProgress!),
-        if (snapshot.hasInProgress) const PlinthSpace(h: PlinthSize.md),
-        if (snapshot.isRestDay)
-          PlinthHeroBlock(
-            headline: l10n.restDay,
-            subhead: l10n.restDayMessage,
-            headlineOrder: 3,
-            padding: const EdgeInsets.all(PlinthSpacing.lg),
-            actions: [
-              PlinthButton(
-                variant: PlinthVariant.outline,
-                onPressed: () => context.go('/program'),
-                child: Text(l10n.viewProgram),
-              ),
-            ],
-          )
-        else
-          for (var i = 0; i < snapshot.todayWorkouts.length; i++) ...[
-            if (i > 0) const PlinthSpace(h: PlinthSize.md),
-            _TodayCard(
-              l10n: l10n,
-              locale: locale,
-              workout: snapshot.todayWorkouts[i],
-              showPrimaryAction: inProgressId == null ||
-                  inProgressId != snapshot.todayWorkouts[i].session?.id,
-              onStart: () => startProgramDay(
-                context: context,
-                ref: ref,
-                dayId: snapshot.todayWorkouts[i].day.id,
-              ),
-            ),
-          ],
-        const PlinthSpace(h: PlinthSize.lg),
-        PlinthTitle(l10n.thisWeek, order: 3),
-        const PlinthSpace(h: PlinthSize.sm),
-        PlinthStatGrid(
-          columns: 3,
-          minColWidth: 96,
-          tiles: [
-            PlinthStatTile(
-              label: l10n.workouts,
-              value: snapshot.weekStats.workouts.toString(),
-            ),
-            PlinthStatTile(
-              label: l10n.minutesShort,
-              value: '${snapshot.weekStats.minutes}',
-            ),
-            PlinthStatTile(
-              label: l10n.completion,
-              value: l10n.percent((snapshot.weekStats.completion * 100).round()),
-            ),
-          ],
+        if (snapshot.hasInProgress) ...[
+          _ContinueCard(info: snapshot.inProgress!),
+          const PlinthSpace(h: PlinthSize.md),
+        ],
+        PlinthPaper(
+          withBorder: true,
+          p: PlinthSize.lg,
+          child: snapshot.isRestDay
+              ? PlinthHeroBlock(
+                  layout: PlinthHeroLayout.split,
+                  eyebrow: PlinthBadge(l10n.restDay, color: 'yellow'),
+                  headline: l10n.restDay,
+                  subhead: l10n.restDayMessage,
+                  headlineOrder: 2,
+                  actions: [
+                    PlinthButton(
+                      onPressed: () => context.go('/program'),
+                      child: Text(l10n.viewProgram),
+                    ),
+                  ],
+                  footer: _WeekStrip(snapshot: snapshot, l10n: l10n),
+                )
+              : snapshot.todayWorkouts.isEmpty
+                  ? PlinthHeroBlock(
+                      layout: PlinthHeroLayout.split,
+                      eyebrow: PlinthBadge(l10n.todaysWorkout, color: 'green'),
+                      headline: l10n.todaysWorkout,
+                      subhead: l10n.noProgramAssigned,
+                      headlineOrder: 2,
+                      actions: [
+                        PlinthButton(
+                          variant: PlinthVariant.outline,
+                          onPressed: () => context.go('/program'),
+                          child: Text(l10n.viewProgram),
+                        ),
+                      ],
+                      footer: _WeekStrip(snapshot: snapshot, l10n: l10n),
+                    )
+                  : _TodayHero(
+                      l10n: l10n,
+                      locale: locale,
+                      workout: snapshot.todayWorkouts.first,
+                      showPrimaryAction: inProgressId == null ||
+                          inProgressId !=
+                              snapshot.todayWorkouts.first.session?.id,
+                      week: _WeekStrip(snapshot: snapshot, l10n: l10n),
+                      onStart: () => startProgramDay(
+                        context: context,
+                        ref: ref,
+                        dayId: snapshot.todayWorkouts.first.day.id,
+                      ),
+                    ),
         ),
+        for (final workout in extras) ...[
+          const PlinthSpace(h: PlinthSize.md),
+          _TodayCard(
+            l10n: l10n,
+            locale: locale,
+            workout: workout,
+            showPrimaryAction: inProgressId == null ||
+                inProgressId != workout.session?.id,
+            onStart: () => startProgramDay(
+              context: context,
+              ref: ref,
+              dayId: workout.day.id,
+            ),
+          ),
+        ],
         const AppVersionLabel(),
       ],
+    );
+  }
+}
+
+class _WeekStrip extends StatelessWidget {
+  const _WeekStrip({required this.snapshot, required this.l10n});
+
+  final HomeSnapshot snapshot;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return PlinthStatStrip(
+      divider: true,
+      stats: [
+        PlinthStat(
+          value: snapshot.weekStats.workouts.toString(),
+          label: l10n.workouts,
+        ),
+        PlinthStat(
+          value: '${snapshot.weekStats.minutes}',
+          label: l10n.minutesShort,
+        ),
+        PlinthStat(
+          value: l10n.percent((snapshot.weekStats.completion * 100).round()),
+          label: l10n.completion,
+        ),
+      ],
+    );
+  }
+}
+
+class _TodayHero extends StatelessWidget {
+  const _TodayHero({
+    required this.l10n,
+    required this.locale,
+    required this.workout,
+    required this.showPrimaryAction,
+    required this.week,
+    required this.onStart,
+  });
+
+  final AppLocalizations l10n;
+  final Locale locale;
+  final TodayWorkout workout;
+  final bool showPrimaryAction;
+  final Widget week;
+  final VoidCallback onStart;
+
+  @override
+  Widget build(BuildContext context) {
+    final session = workout.session;
+    final completed = session?.status == WorkoutStatus.completed;
+    final started = session?.status == WorkoutStatus.started;
+    final minutes = workout.exercises.isEmpty
+        ? 0
+        : (estimatedWorkoutSeconds(
+                workout.exercises.map((e) => e.assignment),
+              ) /
+              60)
+            .round();
+    final venue = programVenueLabel(l10n, workout.program.venue);
+    final action = started
+        ? l10n.resumeWorkout
+        : completed
+            ? l10n.startAgain
+            : l10n.startWorkout;
+
+    return PlinthHeroBlock(
+      layout: PlinthHeroLayout.split,
+      eyebrow: PlinthBadge(l10n.todaysWorkout, color: 'green'),
+      headline: localizedName(workout.day.title, locale),
+      subhead: [
+        workout.program.name,
+        venue,
+        '$minutes ${l10n.minutes}',
+        l10n.exerciseCount(workout.exercises.length),
+        if (completed) l10n.alreadyCompletedToday,
+      ].join(' · '),
+      headlineOrder: 2,
+      actions: [
+        if (showPrimaryAction)
+          PlinthButton(
+            onPressed: onStart,
+            child: Text(action),
+          ),
+      ],
+      footer: week,
     );
   }
 }
@@ -139,31 +222,27 @@ class _CatalogUpdateCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    return PlinthCard(
-      withBorder: true,
-      header: PlinthBadge(l10n.catalogUpdateBadge),
-      footer: PlinthStack(
-        gap: PlinthSize.sm,
-        children: [
-          PlinthAsyncButton(
-            fullWidth: true,
-            onPressed: () => ref.read(authProvider.notifier).refreshCatalog(),
-            doneLabel: l10n.catalogRefreshed,
-            child: Text(l10n.catalogSyncNow),
-          ),
-          PlinthButton(
-            fullWidth: true,
-            variant: PlinthVariant.outline,
-            onPressed: () => ref.read(authProvider.notifier).dismissCatalogUpdate(),
-            child: Text(l10n.catalogUpdateLater),
-          ),
-        ],
-      ),
-      child: PlinthText(
-        update.newCount > 0
-            ? l10n.catalogUpdateAvailable(update.newCount)
-            : l10n.catalogUpdateChanged,
-      ),
+    return PlinthBannerBlock(
+      width: null,
+      color: 'green',
+      layout: PlinthBannerLayout.notice,
+      title: l10n.catalogUpdateBadge,
+      message: update.newCount > 0
+          ? l10n.catalogUpdateAvailable(update.newCount)
+          : l10n.catalogUpdateChanged,
+      actions: [
+        PlinthAsyncButton(
+          onPressed: () => ref.read(authProvider.notifier).refreshCatalog(),
+          doneLabel: l10n.catalogRefreshed,
+          child: Text(l10n.catalogSyncNow),
+        ),
+        PlinthButton(
+          variant: PlinthVariant.outline,
+          onPressed: () => ref.read(authProvider.notifier).dismissCatalogUpdate(),
+          child: Text(l10n.catalogUpdateLater),
+        ),
+      ],
+      onClose: () => ref.read(authProvider.notifier).dismissCatalogUpdate(),
     );
   }
 }

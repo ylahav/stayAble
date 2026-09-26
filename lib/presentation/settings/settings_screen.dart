@@ -87,16 +87,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         icon: const Icon(Icons.arrow_back),
         onPressed: () => context.pop(),
       ),
-      actions: const [LanguageToggle()],
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          PlinthSpacing.lg,
-          PlinthSpacing.md,
-          PlinthSpacing.lg,
-          PlinthSpacing.xl,
-        ),
+      body: StayAbleScrollBody(
         children: [
-          PlinthBadge(isLocal ? l10n.appModeLocal : l10n.appModeCloud),
+          Row(
+            children: [
+              PlinthBadge(isLocal ? l10n.appModeLocal : l10n.appModeCloud),
+              const Spacer(),
+              const LanguageToggle(),
+            ],
+          ),
           const PlinthSpace(h: PlinthSize.md),
           if (_error != null) PlinthAlert(color: 'red', child: Text(_error!)),
           if (_saved != null) PlinthAlert(color: 'green', child: Text(_saved!)),
@@ -204,6 +203,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               color: 'gray',
             ),
           ),
+          if ((ref.watch(authProvider).value?.token.isNotEmpty ?? false)) ...[
+            const PlinthSpace(h: PlinthSize.lg),
+            PlinthButton(
+              fullWidth: true,
+              variant: PlinthVariant.outline,
+              onPressed: () => ref.read(authProvider.notifier).logout(),
+              child: Text(l10n.logOut),
+            ),
+          ],
         ],
       ),
     );

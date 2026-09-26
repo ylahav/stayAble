@@ -72,3 +72,8 @@ export const localizedTextFields: Field[] = [
   { name: 'en', type: 'text', required: true },
   { name: 'he', type: 'text' },
 ]
+
+export const localizedRichTextFields: Field[] = [
+  { name: 'en', type: 'richText', required: true, label: 'English' },
+  { name: 'he', type: 'richText', label: 'Hebrew' },
+]

@@ -11,6 +11,7 @@ import '../../core/widgets/gym_clock.dart';
 import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/note_composer.dart';
 import '../../core/widgets/stayable_async.dart';
+import '../../core/widgets/stayable_html.dart';
 import '../../domain/domain.dart';
 import '../auth/auth_controller.dart';
 import '../providers.dart';
@@ -185,13 +186,7 @@ class _ExercisePicker extends ConsumerWidget {
         return a.compareTo(b);
       });
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        PlinthSpacing.lg,
-        PlinthSpacing.sm,
-        PlinthSpacing.lg,
-        PlinthSpacing.xl,
-      ),
+    return StayAbleScrollBody(
       children: [
         PlinthTitle(l10n.chooseExercise, order: 3),
         const PlinthSpace(h: PlinthSize.xs),
@@ -286,18 +281,10 @@ class _Player extends ConsumerWidget {
             state.playback.items.length;
 
     final description = localizedName(item.exercise.description, locale);
-    final steps = localizedName(item.exercise.instructions, locale)
-        .split('\n')
-        .where((s) => s.trim().isNotEmpty)
-        .toList();
+    final instructions = localizedName(item.exercise.instructions, locale);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        PlinthSpacing.lg,
-        PlinthSpacing.sm,
-        PlinthSpacing.lg,
-        PlinthSpacing.lg,
-      ),
+      padding: StayAbleScrollBody.padding,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -342,14 +329,9 @@ class _Player extends ConsumerWidget {
                     PlinthTitle(l10n.description, order: 4),
                     PlinthText(description),
                   ],
-                  if (steps.isNotEmpty) ...[
+                  if (instructions.trim().isNotEmpty) ...[
                     PlinthTitle(l10n.howToPerform, order: 4),
-                    PlinthList(
-                      type: PlinthListType.ordered,
-                      items: [
-                        for (final step in steps) PlinthListItem(Text(step)),
-                      ],
-                    ),
+                    StayAbleInstructions(text: instructions),
                   ],
                 ],
               ),
