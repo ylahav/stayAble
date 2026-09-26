@@ -18,6 +18,7 @@ import { WorkoutSessions } from './collections/WorkoutSessions'
 import { seedExerciseCatalog } from './seed/exercises'
 import { seedDefaultProgram } from './seed/program'
 import { seedCompletedSession } from './seed/sessions'
+import { publicCatalogRootEndpoints } from './lib/catalogEndpoints'
 import { configuredOrigins, publicServerURL } from './lib/publicOrigin'
 
 const filename = fileURLToPath(import.meta.url)
@@ -66,6 +67,7 @@ export default buildConfig({
   ],
   cors,
   csrf: cors,
+  endpoints: publicCatalogRootEndpoints(),
   db: mongooseAdapter({
     url: process.env.DATABASE_URI || '',
   }),

@@ -52,8 +52,9 @@ class ExerciseDetailsScreen extends ConsumerWidget {
               const PlinthSpace(h: PlinthSize.xs),
               PlinthText(
                 [
-                  difficultyLabel(l10n, exercise.difficulty),
+                  workoutTypeLabel(l10n, exercise.workoutType),
                   venueLabel(l10n, exercise.venue),
+                  difficultyLabel(l10n, exercise.difficulty),
                   if (exercise.gymNumber != null)
                     l10n.gymStation(exercise.gymNumber!),
                 ].join(' · '),

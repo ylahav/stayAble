@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-/// Compile-time fallback. The in-app Server setting overrides this.
+/// Compile-time fallback used as the default StayAble site.
+/// Standalone weekly catalog checks use this when no server was saved.
+/// Network setup and Settings can override it.
 String resolvePayloadUrl() {
   const fromEnv = String.fromEnvironment('PAYLOAD_URL');
   if (fromEnv.isNotEmpty) return normalizePayloadUrl(fromEnv);

@@ -1,5 +1,10 @@
 import 'enums.dart';
 
+const localProgramPrefix = 'local-';
+const anonymousLocalUserId = 'user-local';
+
+bool isLocalProgramId(String id) => id.startsWith(localProgramPrefix);
+
 class TrainingProgram {
   const TrainingProgram({
     required this.id,

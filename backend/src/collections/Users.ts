@@ -153,7 +153,15 @@ export const Users: CollectionConfig = {
         { label: 'Mobility', value: 'mobility' },
         { label: 'Cardio', value: 'cardio' },
         { label: 'Weight management', value: 'weightManagement' },
+        { label: 'Body toning', value: 'bodyToning' },
       ],
+    },
+    {
+      name: 'assessment',
+      type: 'json',
+      admin: {
+        description: 'Structured athlete profile from the StayAble app (health, goals, lifestyle).',
+      },
     },
     {
       name: 'language',

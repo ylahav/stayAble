@@ -50,39 +50,18 @@ class StayAblePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                PlinthSpacing.md,
-                PlinthSpacing.sm,
-                PlinthSpacing.md,
-                0,
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (leading != null) ...[
-                    leading!,
-                    const SizedBox(width: PlinthSpacing.sm),
-                  ],
-                  Expanded(
-                    child: PlinthPageHeader(
-                      title: title,
-                      subtitle: subtitle,
-                      actions: actions,
-                      below: below,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(child: body),
-          ],
-        ),
+    return PlinthPage(
+      title: title,
+      subtitle: subtitle,
+      leading: leading,
+      actions: actions,
+      below: below,
+      body: body,
+      padding: const EdgeInsets.fromLTRB(
+        PlinthSpacing.md,
+        PlinthSpacing.sm,
+        PlinthSpacing.md,
+        0,
       ),
     );
   }

@@ -115,6 +115,12 @@ async function packMediaDoc(row: Doc): Promise<PackMedia | null> {
   }
 }
 
+function workoutTypeFromCategory(category: unknown): 'strength' | 'aerobic' | 'hiit' | 'functional' {
+  if (category === 'strength') return 'strength'
+  if (category === 'cardio') return 'aerobic'
+  return 'functional'
+}
+
 function packExercise(row: Doc): Record<string, unknown> {
   const image = row.image as { clientId?: string | null; filename?: string | null } | string | null
   const imageClientId =
@@ -132,6 +138,7 @@ function packExercise(row: Doc): Record<string, unknown> {
     category: row.category,
     difficulty: row.difficulty,
     venue: row.venue ?? 'both',
+    workoutType: row.workoutType ?? workoutTypeFromCategory(row.category),
     gymNumber: row.gymNumber ?? null,
     duration: row.duration ?? null,
     repetitions: row.repetitions ?? null,
@@ -376,6 +383,7 @@ export async function importCatalogPack(
       category: row.category,
       difficulty: row.difficulty,
       venue: row.venue ?? 'both',
+      workoutType: row.workoutType ?? workoutTypeFromCategory(row.category),
       gymNumber: row.gymNumber ?? undefined,
       duration: row.duration ?? undefined,
       repetitions: row.repetitions ?? undefined,

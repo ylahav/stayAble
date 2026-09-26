@@ -18,6 +18,8 @@ class Users extends Table {
   TextColumn get preferredUnits =>
       textEnum<PreferredUnits>().withDefault(const Constant('kg'))();
   IntColumn get defaultRestSeconds => integer().nullable()();
+  TextColumn get assessment =>
+      text().nullable().map(const AssessmentConverter())();
   BoolColumn get active => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
@@ -41,6 +43,8 @@ class Exercises extends Table {
   TextColumn get safetyNotes => text().map(const LocalizedTextConverter())();
   TextColumn get venue =>
       textEnum<ExerciseVenue>().withDefault(const Constant('both'))();
+  TextColumn get workoutType =>
+      textEnum<WorkoutType>().withDefault(const Constant('strength'))();
   IntColumn get gymNumber => integer().nullable()();
   BoolColumn get active => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();

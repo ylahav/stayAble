@@ -7,8 +7,10 @@ import '../../l10n/app_localizations.dart';
 import '../../core/l10n/labels.dart';
 import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/stayable_async.dart';
+import '../../data/remote/session_store.dart';
 import '../../domain/domain.dart';
 import '../exercises/exercise_preview_sheet.dart';
+import '../profile/birthday_prompt.dart';
 import '../providers.dart';
 
 class ProgramScreen extends ConsumerStatefulWidget {
@@ -19,36 +21,58 @@ class ProgramScreen extends ConsumerStatefulWidget {
 }
 
 class _ProgramScreenState extends ConsumerState<ProgramScreen> {
-  String? _selectedDayId;
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final locale = Localizations.localeOf(context);
     final async = ref.watch(programSnapshotProvider);
+    final isLocal = ref.watch(appModeProvider) == AppMode.local;
 
     return StayAblePage(
-      title: (async.value?.programs.length ?? 0) > 1
-          ? l10n.myPrograms
-          : l10n.myProgram,
-      actions: const [LanguageToggle()],
+      title: l10n.myPrograms,
+      actions: [
+        const LanguageToggle(),
+        if (isLocal)
+          PlinthActionIcon(
+            semanticLabel: l10n.createProgram,
+            icon: const Icon(Icons.add),
+            onPressed: () => context.push('/program/new'),
+          ),
+      ],
       body: async.when(
         loading: () => const StayAbleLoading(),
         error: (e, _) => StayAbleError(message: e),
         data: (snap) {
           if (snap.programs.isEmpty) {
-            return PlinthEmptyState(title: l10n.noProgramAssigned);
+            return ListView(
+              padding: const EdgeInsets.fromLTRB(
+                PlinthSpacing.lg,
+                PlinthSpacing.sm,
+                PlinthSpacing.lg,
+                PlinthSpacing.xl,
+              ),
+              children: [
+                PlinthEmptyState(
+                  title: isLocal ? l10n.noProgramLocal : l10n.noProgramAssigned,
+                ),
+                if (isLocal) ...[
+                  const PlinthSpace(h: PlinthSize.md),
+                  _CreateProgramButton(l10n: l10n),
+                ],
+              ],
+            );
           }
           final todayWeekday = DateTime.now().weekday;
-          final allDays = [
-            for (final view in snap.programs) ...view.days,
-          ];
-          final selectedId = _selectedDayId ??
-              allDays
-                  .where((d) => d.weekday == todayWeekday)
-                  .map((d) => d.id)
+          final initialProgram = snap.programs
+                  .where(
+                    (view) => view.days.any(
+                      (day) =>
+                          day.weekday == todayWeekday || day.weekday == null,
+                    ),
+                  )
+                  .map((view) => view.program.id)
                   .firstOrNull ??
-              allDays.first.id;
+              snap.programs.first.program.id;
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(
@@ -58,49 +82,116 @@ class _ProgramScreenState extends ConsumerState<ProgramScreen> {
               PlinthSpacing.xl,
             ),
             children: [
-              for (var i = 0; i < snap.programs.length; i++) ...[
-                if (i > 0) const PlinthSpace(h: PlinthSize.lg),
-                _ProgramSection(
-                  view: snap.programs[i],
-                  locale: locale,
-                  l10n: l10n,
-                  todayWeekday: todayWeekday,
-                  selectedDayId: selectedId,
-                  onSelectDay: (id) => setState(() => _selectedDayId = id),
-                  onStart: (dayId) async {
-                    final inProgressId =
-                        snap.programs[i].inProgressByDayId[dayId];
-                    final session = inProgressId != null
-                        ? await ref
-                            .read(repositoryProvider)
-                            .resumeSession(inProgressId)
-                        : await ref
-                            .read(repositoryProvider)
-                            .startOrResumeSession(dayId);
-                    if (!context.mounted) return;
-                    ref.invalidate(homeSnapshotProvider);
-                    ref.invalidate(programSnapshotProvider);
-                    ref.invalidate(historySnapshotProvider);
-                    context.push('/workout/${session.id}');
-                  },
-                ),
+              if (isLocal) ...[
+                _CreateProgramButton(l10n: l10n),
+                const PlinthSpace(h: PlinthSize.lg),
               ],
+              PlinthAccordion(
+                multiple: true,
+                initiallyOpen: {initialProgram},
+                items: [
+                  for (final view in snap.programs)
+                    PlinthAccordionItem(
+                      value: view.program.id,
+                      title: view.program.name,
+                      content: _ProgramPanel(
+                        view: view,
+                        locale: locale,
+                        l10n: l10n,
+                        todayWeekday: todayWeekday,
+                        canEdit:
+                            isLocal && isLocalProgramId(view.program.id),
+                        onEdit: () =>
+                            context.push('/program/edit/${view.program.id}'),
+                        onDelete: () => _deleteProgram(view.program.id),
+                        onStart: (dayId) => _startDay(view, dayId),
+                      ),
+                    ),
+                ],
+              ),
             ],
           );
         },
       ),
     );
   }
+
+  Future<void> _startDay(AssignedProgramView view, String dayId) {
+    return startProgramDay(
+      context: context,
+      ref: ref,
+      dayId: dayId,
+      resumeSessionId: view.inProgressByDayId[dayId],
+    );
+  }
+
+  Future<void> _deleteProgram(String id) async {
+    final l10n = AppLocalizations.of(context);
+    final controller = PlinthDisclosureController();
+    var confirmed = false;
+    await PlinthModal(
+      controller: controller,
+      title: l10n.deleteProgram,
+      size: PlinthSize.sm,
+      child: Builder(
+        builder: (modalContext) {
+          return PlinthStack(
+            children: [
+              PlinthText(l10n.deleteProgramConfirm),
+              PlinthGroup(
+                children: [
+                  PlinthButton(
+                    variant: PlinthVariant.subtle,
+                    onPressed: () => Navigator.of(modalContext).pop(),
+                    child: Text(l10n.cancel),
+                  ),
+                  PlinthButton(
+                    onPressed: () {
+                      confirmed = true;
+                      Navigator.of(modalContext).pop();
+                    },
+                    child: Text(l10n.deleteProgram),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    ).show(context);
+    controller.dispose();
+    if (!confirmed || !mounted) return;
+    await ref.read(repositoryProvider).deleteLocalProgram(id);
+    ref.invalidate(homeSnapshotProvider);
+    ref.invalidate(programSnapshotProvider);
+    ref.invalidate(historySnapshotProvider);
+  }
 }
 
-class _ProgramSection extends StatelessWidget {
-  const _ProgramSection({
+class _CreateProgramButton extends StatelessWidget {
+  const _CreateProgramButton({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return PlinthButton(
+      fullWidth: true,
+      onPressed: () => context.push('/program/new'),
+      child: Text(l10n.createProgram),
+    );
+  }
+}
+
+class _ProgramPanel extends StatelessWidget {
+  const _ProgramPanel({
     required this.view,
     required this.locale,
     required this.l10n,
     required this.todayWeekday,
-    required this.selectedDayId,
-    required this.onSelectDay,
+    required this.canEdit,
+    required this.onEdit,
+    required this.onDelete,
     required this.onStart,
   });
 
@@ -108,86 +199,135 @@ class _ProgramSection extends StatelessWidget {
   final Locale locale;
   final AppLocalizations l10n;
   final int todayWeekday;
-  final String selectedDayId;
-  final ValueChanged<String> onSelectDay;
+  final bool canEdit;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
   final Future<void> Function(String dayId) onStart;
 
   @override
   Widget build(BuildContext context) {
-    final selected = view.days.where((d) => d.id == selectedDayId).firstOrNull;
-    final items = selected == null
-        ? const <ProgramExerciseItem>[]
-        : (view.exercisesByDay[selected.id] ?? const []);
+    final openDays = {
+      for (final day in view.days)
+        if (day.weekday == todayWeekday || day.weekday == null) day.id,
+    };
 
-    return PlinthCard(
-      withBorder: true,
-      header: PlinthStack(
-        gap: PlinthSize.xs,
-        children: [
-          PlinthTitle(view.program.name, order: 3),
-          PlinthText(programVenueLabel(l10n, view.program.venue), color: 'gray'),
-        ],
-      ),
-      footer: selected == null
-          ? null
-          : PlinthButton(
-              fullWidth: true,
-              onPressed: () => onStart(selected.id),
-              child: Text(
-                view.inProgressByDayId.containsKey(selected.id)
-                    ? l10n.resumeWorkout
-                    : l10n.start,
+    return PlinthStack(
+      children: [
+        PlinthText(
+          '${programVenueLabel(l10n, view.program.venue)} · ${scheduleTypeLabel(l10n, view.program.scheduleType)}',
+          color: 'gray',
+        ),
+        if (canEdit)
+          PlinthGroup(
+            children: [
+              PlinthButton(
+                variant: PlinthVariant.outline,
+                onPressed: onEdit,
+                child: Text(l10n.editProgram),
               ),
-            ),
-      child: PlinthStack(
-        children: [
-          for (final day in view.days)
-            PlinthNavLink(
-              label: weekdayLabel(l10n, day.weekday ?? 0),
-              active: day.id == selectedDayId,
-              trailing: PlinthText(
-                _dayTrailing(l10n, view, day, todayWeekday),
-                color: view.completedDayIds.contains(day.id) ||
-                        view.inProgressByDayId.containsKey(day.id)
-                    ? 'green'
-                    : 'gray',
-                size: PlinthSize.sm,
+              PlinthButton(
+                variant: PlinthVariant.subtle,
+                onPressed: onDelete,
+                child: Text(l10n.deleteProgram),
               ),
-              onTap: () => onSelectDay(day.id),
-            ),
-          if (selected != null) ...[
-            PlinthTitle(
-              '${weekdayLabel(l10n, selected.weekday ?? 0)} — ${localizedName(selected.title, locale)}',
-              order: 4,
-            ),
-            for (var i = 0; i < items.length; i++)
-              PlinthNavLink(
-                label: localizedName(items[i].exercise.name, locale),
-                trailing: PlinthText(
-                  prescriptionLabel(l10n, items[i].assignment),
-                  color: 'gray',
-                  size: PlinthSize.sm,
+            ],
+          ),
+        if (view.days.isNotEmpty)
+          PlinthAccordion(
+            multiple: true,
+            initiallyOpen: openDays,
+            items: [
+              for (final day in view.days)
+                PlinthAccordionItem(
+                  value: day.id,
+                  title: _dayTitle(day),
+                  content: _DayPanel(
+                    view: view,
+                    day: day,
+                    locale: locale,
+                    l10n: l10n,
+                    onStart: () => onStart(day.id),
+                  ),
                 ),
-                onTap: () => showExercisePreview(
-                  context: context,
-                  item: items[i],
-                ),
-              ),
-          ],
-        ],
-      ),
+            ],
+          ),
+      ],
     );
   }
 
-  String _dayTrailing(
-    AppLocalizations l10n,
-    AssignedProgramView view,
-    ProgramDay day,
-    int todayWeekday,
-  ) {
+  String _dayTitle(ProgramDay day) {
+    final label = programDayLabel(l10n, day.weekday);
+    final status = _dayTrailing(day);
+    final count = view.exercisesByDay[day.id]?.length ?? 0;
+    return '$label · ${l10n.exerciseCount(count)} · $status';
+  }
+
+  String _dayTrailing(ProgramDay day) {
     if (view.completedDayIds.contains(day.id)) return l10n.completed;
     if (view.inProgressByDayId.containsKey(day.id)) return l10n.inProgress;
-    if (day.weekday == todayWeekday) return l10n.today;
+    if (day.weekday == null || day.weekday == todayWeekday) return l10n.today;
     return l10n.upcoming;
+  }
+}
+
+class _DayPanel extends StatelessWidget {
+  const _DayPanel({
+    required this.view,
+    required this.day,
+    required this.locale,
+    required this.l10n,
+    required this.onStart,
+  });
+
+  final AssignedProgramView view;
+  final ProgramDay day;
+  final Locale locale;
+  final AppLocalizations l10n;
+  final VoidCallback onStart;
+
+  @override
+  Widget build(BuildContext context) {
+    final items = view.exercisesByDay[day.id] ?? const <ProgramExerciseItem>[];
+    return PlinthStack(
+      children: [
+        PlinthButton(
+          fullWidth: true,
+          onPressed: onStart,
+          child: Text(
+            view.inProgressByDayId.containsKey(day.id)
+                ? l10n.resumeWorkout
+                : l10n.start,
+          ),
+        ),
+        if (items.isNotEmpty)
+          PlinthAccordion(
+            multiple: true,
+            items: [
+              for (final item in items)
+                PlinthAccordionItem(
+                  value: item.assignment.id,
+                  title: localizedName(item.exercise.name, locale),
+                  content: PlinthStack(
+                    children: [
+                      PlinthText(
+                        prescriptionLabel(l10n, item.assignment),
+                        color: 'gray',
+                      ),
+                      PlinthButton(
+                        variant: PlinthVariant.outline,
+                        fullWidth: true,
+                        onPressed: () => showExercisePreview(
+                          context: context,
+                          item: item,
+                        ),
+                        child: Text(l10n.description),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+      ],
+    );
   }
 }

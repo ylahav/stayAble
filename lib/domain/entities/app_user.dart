@@ -1,4 +1,16 @@
 import 'enums.dart';
+import 'trainee_assessment.dart';
+
+int? ageYearsFromBirthDate(DateTime? birth, [DateTime? now]) {
+  if (birth == null) return null;
+  final today = now ?? DateTime.now();
+  var age = today.year - birth.year;
+  if (today.month < birth.month ||
+      (today.month == birth.month && today.day < birth.day)) {
+    age--;
+  }
+  return age;
+}
 
 class AppUser {
   const AppUser({
@@ -14,6 +26,7 @@ class AppUser {
     this.trainingVenue = ExerciseVenue.both,
     this.preferredUnits = PreferredUnits.kg,
     this.defaultRestSeconds,
+    this.assessment,
     required this.active,
     required this.createdAt,
     required this.updatedAt,
@@ -31,7 +44,10 @@ class AppUser {
   final ExerciseVenue trainingVenue;
   final PreferredUnits preferredUnits;
   final int? defaultRestSeconds;
+  final TraineeAssessment? assessment;
   final bool active;
   final DateTime createdAt;
   final DateTime updatedAt;
+
+  int? ageYears([DateTime? now]) => ageYearsFromBirthDate(birthDate, now);
 }

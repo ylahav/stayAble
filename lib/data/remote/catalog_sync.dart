@@ -75,13 +75,23 @@ String resolveExercisePhoto(Map<String, dynamic> doc, String baseUrl) {
 
 Exercise exerciseFromPayload(Map<String, dynamic> doc, String baseUrl) {
   final now = DateTime.now();
+  final category = _enum(
+    ExerciseCategory.values,
+    doc['category'],
+    ExerciseCategory.strength,
+  );
   return Exercise(
     id: doc['clientId'] as String,
     name: _text(doc['name']),
     description: _text(doc['description']),
     instructions: _text(doc['instructions']),
     photo: resolveExercisePhoto(doc, baseUrl),
-    category: _enum(ExerciseCategory.values, doc['category'], ExerciseCategory.strength),
+    category: category,
+    workoutType: _enum(
+      WorkoutType.values,
+      doc['workoutType'],
+      workoutTypeFromCategory(category),
+    ),
     difficulty: _enum(Difficulty.values, doc['difficulty'], Difficulty.intermediate),
     duration: _int(doc['duration']),
     repetitions: _int(doc['repetitions']),

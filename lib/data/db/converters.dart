@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/localized_text.dart';
+import '../../domain/entities/trainee_assessment.dart';
 
 class LocalizedTextConverter extends TypeConverter<LocalizedText, String> {
   const LocalizedTextConverter();
@@ -53,4 +54,22 @@ class GoalListConverter extends TypeConverter<List<FitnessGoal>, String> {
   @override
   String toSql(List<FitnessGoal> value) =>
       json.encode(value.map((e) => e.name).toList());
+}
+
+class AssessmentConverter extends TypeConverter<TraineeAssessment?, String?> {
+  const AssessmentConverter();
+
+  @override
+  TraineeAssessment? fromSql(String? fromDb) {
+    if (fromDb == null || fromDb.isEmpty) return null;
+    final decoded = json.decode(fromDb);
+    if (decoded is! Map) return null;
+    return TraineeAssessment.fromJson(Map<String, dynamic>.from(decoded));
+  }
+
+  @override
+  String? toSql(TraineeAssessment? value) {
+    if (value == null) return null;
+    return json.encode(value.toJson());
+  }
 }

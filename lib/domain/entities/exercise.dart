@@ -16,6 +16,7 @@ class Exercise {
     required this.equipment,
     required this.safetyNotes,
     this.venue = ExerciseVenue.both,
+    this.workoutType = WorkoutType.strength,
     this.gymNumber,
     required this.active,
     required this.createdAt,
@@ -35,7 +36,10 @@ class Exercise {
   final EquipmentKind equipment;
   final LocalizedText safetyNotes;
   final ExerciseVenue venue;
+  final WorkoutType workoutType;
   final int? gymNumber;
+
+  bool get canDoAtHome => venue != ExerciseVenue.gym;
   final bool active;
   final DateTime createdAt;
   final DateTime updatedAt;

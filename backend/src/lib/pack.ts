@@ -74,6 +74,12 @@ function relId(value: unknown): string {
   return ''
 }
 
+function workoutTypeFromCategory(category: unknown): 'strength' | 'aerobic' | 'hiit' | 'functional' {
+  if (category === 'strength') return 'strength'
+  if (category === 'cardio') return 'aerobic'
+  return 'functional'
+}
+
 function loc(value: unknown): { en: string; he: string } {
   const group = value as { en?: string | null; he?: string | null } | null
   const en = group?.en?.trim() || group?.he?.trim() || '—'
@@ -253,6 +259,7 @@ export async function exportStayAblePack(payload: Payload): Promise<StayAblePack
       defaultRestSeconds: row.defaultRestSeconds,
       language: row.language,
       goals: row.goals,
+      assessment: row.assessment,
       active: row.active,
     })),
     exercises: exercises.map((row) => {
@@ -270,6 +277,7 @@ export async function exportStayAblePack(payload: Payload): Promise<StayAblePack
         category: row.category,
         difficulty: row.difficulty,
         venue: row.venue ?? 'both',
+        workoutType: row.workoutType ?? workoutTypeFromCategory(row.category),
         gymNumber: row.gymNumber ?? null,
         duration: row.duration ?? null,
         repetitions: row.repetitions ?? null,
@@ -464,6 +472,7 @@ export async function importStayAblePack(
       defaultRestSeconds: row.defaultRestSeconds,
       language: row.language ?? 'en',
       goals: row.goals ?? [],
+      assessment: row.assessment,
       active: row.active ?? true,
     }
     if (existing) {
@@ -508,6 +517,7 @@ export async function importStayAblePack(
       category: row.category,
       difficulty: row.difficulty,
       venue: row.venue ?? 'both',
+      workoutType: row.workoutType ?? workoutTypeFromCategory(row.category),
       gymNumber: row.gymNumber ?? undefined,
       duration: row.duration ?? undefined,
       repetitions: row.repetitions ?? undefined,

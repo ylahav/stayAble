@@ -19,6 +19,7 @@ export type SeedExercise = {
   category: 'warmUp' | 'mobility' | 'strength' | 'cardio' | 'stretching' | 'coolDown'
   difficulty: 'beginner' | 'intermediate' | 'advanced'
   venue?: 'home' | 'gym' | 'both'
+  workoutType?: 'strength' | 'aerobic' | 'hiit' | 'functional'
   gymNumber?: number
   duration?: number
   repetitions?: number
@@ -417,6 +418,33 @@ export const seedExercisesCatalog: SeedExercise[] = [
   ...aerobicExercises,
 ]
 
+const workoutTypeOverrides: Record<string, NonNullable<SeedExercise['workoutType']>> = {
+  'ex-march': 'aerobic',
+  'ex-plank': 'functional',
+  'ex-dead-bug': 'functional',
+  'ex-bird-dog': 'functional',
+  'ex-side-plank': 'functional',
+  'ex-bosu-hold': 'functional',
+  'ex-superman': 'functional',
+  'ex-dolphin': 'functional',
+  'ex-high-march-chair': 'aerobic',
+  'ex-step-jacks-low': 'aerobic',
+  'ex-shadow-boxing': 'hiit',
+  'ex-skater-taps': 'hiit',
+  'ex-butt-kicks-lat': 'hiit',
+  'ex-seated-fast-feet': 'hiit',
+  'ex-chair-incline-burpee': 'hiit',
+}
+
+export function resolveWorkoutType(exercise: Pick<SeedExercise, 'clientId' | 'category' | 'workoutType'>): NonNullable<SeedExercise['workoutType']> {
+  if (exercise.workoutType) return exercise.workoutType
+  const override = workoutTypeOverrides[exercise.clientId]
+  if (override) return override
+  if (exercise.category === 'strength') return 'strength'
+  if (exercise.category === 'cardio') return 'aerobic'
+  return 'functional'
+}
+
 export async function seedExerciseCatalog(payload: Payload): Promise<void> {
   let created = 0
   let imaged = 0
@@ -431,6 +459,7 @@ export async function seedExerciseCatalog(payload: Payload): Promise<void> {
     const data = {
       ...fields,
       venue: exercise.venue ?? 'both',
+      workoutType: resolveWorkoutType(exercise),
       photoPath: photo,
       ...(mediaId ? { image: mediaId } : {}),
     }
@@ -463,6 +492,13 @@ export async function seedExerciseCatalog(payload: Payload): Promise<void> {
         collection: 'exercises',
         id: existing.docs[0].id,
         data: { venue: exercise.venue ?? 'both' },
+      })
+    }
+    if (!existing.docs[0].workoutType) {
+      await payload.update({
+        collection: 'exercises',
+        id: existing.docs[0].id,
+        data: { workoutType: resolveWorkoutType(exercise) },
       })
     }
   }

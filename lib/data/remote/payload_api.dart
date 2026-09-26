@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 import '../../domain/domain.dart';
+import 'athlete_profile.dart';
+import 'catalog_check.dart';
 import 'catalog_sync.dart';
 import 'payload_config.dart';
 
@@ -74,16 +76,40 @@ class PayloadApi {
   }
 
   Future<List<Exercise>> fetchExercises(String token) async {
-    final json = await _read(
-      token,
-      path: '/api/exercises',
-      query: {
-        'limit': '300',
-        'depth': '1',
-        'pagination': 'false',
-        'where[deleted][not_equals]': 'true',
-      },
+    return _exercisesFrom(
+      await _read(
+        token,
+        path: '/api/exercises',
+        query: {
+          'limit': '300',
+          'depth': '1',
+          'pagination': 'false',
+          'where[deleted][not_equals]': 'true',
+        },
+      ),
     );
+  }
+
+  Future<List<Exercise>> fetchPublicCatalog() async {
+    final body = await _getPublic([
+      '/api/public-catalog',
+      '/api/exercises/public-catalog',
+    ]);
+    return _exercisesFrom(_decode(body.body));
+  }
+
+  Future<PublicCatalogStatus> fetchPublicCatalogStatus() async {
+    final body = await _getPublicOrNull([
+      '/api/public-catalog-status',
+      '/api/exercises/public-catalog-status',
+    ]);
+    if (body == null) {
+      return PublicCatalogStatus.fromExercises(await fetchPublicCatalog());
+    }
+    return PublicCatalogStatus.fromJson(_decode(body.body));
+  }
+
+  List<Exercise> _exercisesFrom(Map<String, dynamic> json) {
     final docs = json['docs'];
     final items = <Exercise>[];
     if (docs is List) {
@@ -130,6 +156,29 @@ class PayloadApi {
       trees.add(tree);
     }
     return trees;
+  }
+
+  Future<void> updateAthleteProfile({
+    required String token,
+    required String userId,
+    required DateTime? birthDate,
+    required TraineeAssessment? assessment,
+    required FitnessLevel fitnessLevel,
+    required List<FitnessGoal> goals,
+    required ExerciseVenue trainingVenue,
+  }) async {
+    await _write(
+      token,
+      method: 'PATCH',
+      path: '/api/users/$userId',
+      body: athleteProfilePayload(
+        birthDate: birthDate,
+        assessment: assessment,
+        fitnessLevel: fitnessLevel,
+        goals: goals,
+        trainingVenue: trainingVenue,
+      ),
+    );
   }
 
   Future<void> upsertWorkoutSession({
@@ -265,6 +314,35 @@ class PayloadApi {
       return (docs.first as Map<String, dynamic>)['id'] as String?;
     }
     return null;
+  }
+
+  /// Public catalog routes must not send a JWT or `Content-Type` on GET.
+  /// `/api/exercises/:id` is a protected document lookup, so a missing custom
+  /// collection route comes back as 401/403 instead of 404.
+  Future<http.Response> _getPublic(List<String> paths) async {
+    final body = await _getPublicOrNull(paths);
+    if (body != null) return body;
+    throw const AuthException(
+      AuthFailure.unknown,
+      'Public catalog is not available',
+    );
+  }
+
+  Future<http.Response?> _getPublicOrNull(List<String> paths) async {
+    for (final path in paths) {
+      final body = await _send(
+        () => _client.get(_uri(path), headers: const {'Accept': 'application/json'}),
+      );
+      if (body.statusCode >= 200 && body.statusCode < 300) return body;
+      if (!_isMissingPublicRoute(body.statusCode)) {
+        _throwIfFailed(body);
+      }
+    }
+    return null;
+  }
+
+  bool _isMissingPublicRoute(int statusCode) {
+    return statusCode == 401 || statusCode == 403 || statusCode == 404;
   }
 
   Future<Map<String, dynamic>> _read(

@@ -123,6 +123,15 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
+  @override
+  late final GeneratedColumnWithTypeConverter<TraineeAssessment?, String>
+  assessment = GeneratedColumn<String>(
+    'assessment',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  ).withConverter<TraineeAssessment?>($UsersTable.$converterassessment);
   static const VerificationMeta _activeMeta = const VerificationMeta('active');
   @override
   late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
@@ -172,6 +181,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     trainingVenue,
     preferredUnits,
     defaultRestSeconds,
+    assessment,
     active,
     createdAt,
     updatedAt,
@@ -329,6 +339,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.int,
         data['${effectivePrefix}default_rest_seconds'],
       ),
+      assessment: $UsersTable.$converterassessment.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}assessment'],
+        ),
+      ),
       active: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}active'],
@@ -363,6 +379,8 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   $converterpreferredUnits = const EnumNameConverter<PreferredUnits>(
     PreferredUnits.values,
   );
+  static TypeConverter<TraineeAssessment?, String?> $converterassessment =
+      const AssessmentConverter();
 }
 
 class User extends DataClass implements Insertable<User> {
@@ -378,6 +396,7 @@ class User extends DataClass implements Insertable<User> {
   final ExerciseVenue trainingVenue;
   final PreferredUnits preferredUnits;
   final int? defaultRestSeconds;
+  final TraineeAssessment? assessment;
   final bool active;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -394,6 +413,7 @@ class User extends DataClass implements Insertable<User> {
     required this.trainingVenue,
     required this.preferredUnits,
     this.defaultRestSeconds,
+    this.assessment,
     required this.active,
     required this.createdAt,
     required this.updatedAt,
@@ -437,6 +457,11 @@ class User extends DataClass implements Insertable<User> {
     if (!nullToAbsent || defaultRestSeconds != null) {
       map['default_rest_seconds'] = Variable<int>(defaultRestSeconds);
     }
+    if (!nullToAbsent || assessment != null) {
+      map['assessment'] = Variable<String>(
+        $UsersTable.$converterassessment.toSql(assessment),
+      );
+    }
     map['active'] = Variable<bool>(active);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -467,6 +492,9 @@ class User extends DataClass implements Insertable<User> {
       defaultRestSeconds: defaultRestSeconds == null && nullToAbsent
           ? const Value.absent()
           : Value(defaultRestSeconds),
+      assessment: assessment == null && nullToAbsent
+          ? const Value.absent()
+          : Value(assessment),
       active: Value(active),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
@@ -497,6 +525,7 @@ class User extends DataClass implements Insertable<User> {
         serializer.fromJson<String>(json['preferredUnits']),
       ),
       defaultRestSeconds: serializer.fromJson<int?>(json['defaultRestSeconds']),
+      assessment: serializer.fromJson<TraineeAssessment?>(json['assessment']),
       active: serializer.fromJson<bool>(json['active']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -524,6 +553,7 @@ class User extends DataClass implements Insertable<User> {
         $UsersTable.$converterpreferredUnits.toJson(preferredUnits),
       ),
       'defaultRestSeconds': serializer.toJson<int?>(defaultRestSeconds),
+      'assessment': serializer.toJson<TraineeAssessment?>(assessment),
       'active': serializer.toJson<bool>(active),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -543,6 +573,7 @@ class User extends DataClass implements Insertable<User> {
     ExerciseVenue? trainingVenue,
     PreferredUnits? preferredUnits,
     Value<int?> defaultRestSeconds = const Value.absent(),
+    Value<TraineeAssessment?> assessment = const Value.absent(),
     bool? active,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -561,6 +592,7 @@ class User extends DataClass implements Insertable<User> {
     defaultRestSeconds: defaultRestSeconds.present
         ? defaultRestSeconds.value
         : this.defaultRestSeconds,
+    assessment: assessment.present ? assessment.value : this.assessment,
     active: active ?? this.active,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
@@ -587,6 +619,9 @@ class User extends DataClass implements Insertable<User> {
       defaultRestSeconds: data.defaultRestSeconds.present
           ? data.defaultRestSeconds.value
           : this.defaultRestSeconds,
+      assessment: data.assessment.present
+          ? data.assessment.value
+          : this.assessment,
       active: data.active.present ? data.active.value : this.active,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -608,6 +643,7 @@ class User extends DataClass implements Insertable<User> {
           ..write('trainingVenue: $trainingVenue, ')
           ..write('preferredUnits: $preferredUnits, ')
           ..write('defaultRestSeconds: $defaultRestSeconds, ')
+          ..write('assessment: $assessment, ')
           ..write('active: $active, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -629,6 +665,7 @@ class User extends DataClass implements Insertable<User> {
     trainingVenue,
     preferredUnits,
     defaultRestSeconds,
+    assessment,
     active,
     createdAt,
     updatedAt,
@@ -649,6 +686,7 @@ class User extends DataClass implements Insertable<User> {
           other.trainingVenue == this.trainingVenue &&
           other.preferredUnits == this.preferredUnits &&
           other.defaultRestSeconds == this.defaultRestSeconds &&
+          other.assessment == this.assessment &&
           other.active == this.active &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
@@ -667,6 +705,7 @@ class UsersCompanion extends UpdateCompanion<User> {
   final Value<ExerciseVenue> trainingVenue;
   final Value<PreferredUnits> preferredUnits;
   final Value<int?> defaultRestSeconds;
+  final Value<TraineeAssessment?> assessment;
   final Value<bool> active;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
@@ -684,6 +723,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.trainingVenue = const Value.absent(),
     this.preferredUnits = const Value.absent(),
     this.defaultRestSeconds = const Value.absent(),
+    this.assessment = const Value.absent(),
     this.active = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -702,6 +742,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     this.trainingVenue = const Value.absent(),
     this.preferredUnits = const Value.absent(),
     this.defaultRestSeconds = const Value.absent(),
+    this.assessment = const Value.absent(),
     this.active = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -726,6 +767,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Expression<String>? trainingVenue,
     Expression<String>? preferredUnits,
     Expression<int>? defaultRestSeconds,
+    Expression<String>? assessment,
     Expression<bool>? active,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -745,6 +787,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       if (preferredUnits != null) 'preferred_units': preferredUnits,
       if (defaultRestSeconds != null)
         'default_rest_seconds': defaultRestSeconds,
+      if (assessment != null) 'assessment': assessment,
       if (active != null) 'active': active,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -765,6 +808,7 @@ class UsersCompanion extends UpdateCompanion<User> {
     Value<ExerciseVenue>? trainingVenue,
     Value<PreferredUnits>? preferredUnits,
     Value<int?>? defaultRestSeconds,
+    Value<TraineeAssessment?>? assessment,
     Value<bool>? active,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
@@ -783,6 +827,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       trainingVenue: trainingVenue ?? this.trainingVenue,
       preferredUnits: preferredUnits ?? this.preferredUnits,
       defaultRestSeconds: defaultRestSeconds ?? this.defaultRestSeconds,
+      assessment: assessment ?? this.assessment,
       active: active ?? this.active,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -837,6 +882,11 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (defaultRestSeconds.present) {
       map['default_rest_seconds'] = Variable<int>(defaultRestSeconds.value);
     }
+    if (assessment.present) {
+      map['assessment'] = Variable<String>(
+        $UsersTable.$converterassessment.toSql(assessment.value),
+      );
+    }
     if (active.present) {
       map['active'] = Variable<bool>(active.value);
     }
@@ -867,6 +917,7 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('trainingVenue: $trainingVenue, ')
           ..write('preferredUnits: $preferredUnits, ')
           ..write('defaultRestSeconds: $defaultRestSeconds, ')
+          ..write('assessment: $assessment, ')
           ..write('active: $active, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
@@ -1004,6 +1055,16 @@ class $ExercisesTable extends Exercises
         requiredDuringInsert: false,
         defaultValue: const Constant('both'),
       ).withConverter<ExerciseVenue>($ExercisesTable.$convertervenue);
+  @override
+  late final GeneratedColumnWithTypeConverter<WorkoutType, String> workoutType =
+      GeneratedColumn<String>(
+        'workout_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('strength'),
+      ).withConverter<WorkoutType>($ExercisesTable.$converterworkoutType);
   static const VerificationMeta _gymNumberMeta = const VerificationMeta(
     'gymNumber',
   );
@@ -1065,6 +1126,7 @@ class $ExercisesTable extends Exercises
     equipment,
     safetyNotes,
     venue,
+    workoutType,
     gymNumber,
     active,
     createdAt,
@@ -1217,6 +1279,12 @@ class $ExercisesTable extends Exercises
           data['${effectivePrefix}venue'],
         )!,
       ),
+      workoutType: $ExercisesTable.$converterworkoutType.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}workout_type'],
+        )!,
+      ),
       gymNumber: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}gym_number'],
@@ -1261,6 +1329,8 @@ class $ExercisesTable extends Exercises
       const LocalizedTextConverter();
   static JsonTypeConverter2<ExerciseVenue, String, String> $convertervenue =
       const EnumNameConverter<ExerciseVenue>(ExerciseVenue.values);
+  static JsonTypeConverter2<WorkoutType, String, String> $converterworkoutType =
+      const EnumNameConverter<WorkoutType>(WorkoutType.values);
 }
 
 class Exercise extends DataClass implements Insertable<Exercise> {
@@ -1277,6 +1347,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
   final EquipmentKind equipment;
   final LocalizedText safetyNotes;
   final ExerciseVenue venue;
+  final WorkoutType workoutType;
   final int? gymNumber;
   final bool active;
   final DateTime createdAt;
@@ -1295,6 +1366,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     required this.equipment,
     required this.safetyNotes,
     required this.venue,
+    required this.workoutType,
     this.gymNumber,
     required this.active,
     required this.createdAt,
@@ -1356,6 +1428,11 @@ class Exercise extends DataClass implements Insertable<Exercise> {
         $ExercisesTable.$convertervenue.toSql(venue),
       );
     }
+    {
+      map['workout_type'] = Variable<String>(
+        $ExercisesTable.$converterworkoutType.toSql(workoutType),
+      );
+    }
     if (!nullToAbsent || gymNumber != null) {
       map['gym_number'] = Variable<int>(gymNumber);
     }
@@ -1384,6 +1461,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       equipment: Value(equipment),
       safetyNotes: Value(safetyNotes),
       venue: Value(venue),
+      workoutType: Value(workoutType),
       gymNumber: gymNumber == null && nullToAbsent
           ? const Value.absent()
           : Value(gymNumber),
@@ -1420,6 +1498,9 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       venue: $ExercisesTable.$convertervenue.fromJson(
         serializer.fromJson<String>(json['venue']),
       ),
+      workoutType: $ExercisesTable.$converterworkoutType.fromJson(
+        serializer.fromJson<String>(json['workoutType']),
+      ),
       gymNumber: serializer.fromJson<int?>(json['gymNumber']),
       active: serializer.fromJson<bool>(json['active']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -1451,6 +1532,9 @@ class Exercise extends DataClass implements Insertable<Exercise> {
       'venue': serializer.toJson<String>(
         $ExercisesTable.$convertervenue.toJson(venue),
       ),
+      'workoutType': serializer.toJson<String>(
+        $ExercisesTable.$converterworkoutType.toJson(workoutType),
+      ),
       'gymNumber': serializer.toJson<int?>(gymNumber),
       'active': serializer.toJson<bool>(active),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -1472,6 +1556,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     EquipmentKind? equipment,
     LocalizedText? safetyNotes,
     ExerciseVenue? venue,
+    WorkoutType? workoutType,
     Value<int?> gymNumber = const Value.absent(),
     bool? active,
     DateTime? createdAt,
@@ -1490,6 +1575,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     equipment: equipment ?? this.equipment,
     safetyNotes: safetyNotes ?? this.safetyNotes,
     venue: venue ?? this.venue,
+    workoutType: workoutType ?? this.workoutType,
     gymNumber: gymNumber.present ? gymNumber.value : this.gymNumber,
     active: active ?? this.active,
     createdAt: createdAt ?? this.createdAt,
@@ -1522,6 +1608,9 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           ? data.safetyNotes.value
           : this.safetyNotes,
       venue: data.venue.present ? data.venue.value : this.venue,
+      workoutType: data.workoutType.present
+          ? data.workoutType.value
+          : this.workoutType,
       gymNumber: data.gymNumber.present ? data.gymNumber.value : this.gymNumber,
       active: data.active.present ? data.active.value : this.active,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -1545,6 +1634,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           ..write('equipment: $equipment, ')
           ..write('safetyNotes: $safetyNotes, ')
           ..write('venue: $venue, ')
+          ..write('workoutType: $workoutType, ')
           ..write('gymNumber: $gymNumber, ')
           ..write('active: $active, ')
           ..write('createdAt: $createdAt, ')
@@ -1568,6 +1658,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
     equipment,
     safetyNotes,
     venue,
+    workoutType,
     gymNumber,
     active,
     createdAt,
@@ -1590,6 +1681,7 @@ class Exercise extends DataClass implements Insertable<Exercise> {
           other.equipment == this.equipment &&
           other.safetyNotes == this.safetyNotes &&
           other.venue == this.venue &&
+          other.workoutType == this.workoutType &&
           other.gymNumber == this.gymNumber &&
           other.active == this.active &&
           other.createdAt == this.createdAt &&
@@ -1610,6 +1702,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
   final Value<EquipmentKind> equipment;
   final Value<LocalizedText> safetyNotes;
   final Value<ExerciseVenue> venue;
+  final Value<WorkoutType> workoutType;
   final Value<int?> gymNumber;
   final Value<bool> active;
   final Value<DateTime> createdAt;
@@ -1629,6 +1722,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     this.equipment = const Value.absent(),
     this.safetyNotes = const Value.absent(),
     this.venue = const Value.absent(),
+    this.workoutType = const Value.absent(),
     this.gymNumber = const Value.absent(),
     this.active = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -1649,6 +1743,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     required EquipmentKind equipment,
     required LocalizedText safetyNotes,
     this.venue = const Value.absent(),
+    this.workoutType = const Value.absent(),
     this.gymNumber = const Value.absent(),
     this.active = const Value.absent(),
     required DateTime createdAt,
@@ -1680,6 +1775,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     Expression<String>? equipment,
     Expression<String>? safetyNotes,
     Expression<String>? venue,
+    Expression<String>? workoutType,
     Expression<int>? gymNumber,
     Expression<bool>? active,
     Expression<DateTime>? createdAt,
@@ -1700,6 +1796,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
       if (equipment != null) 'equipment': equipment,
       if (safetyNotes != null) 'safety_notes': safetyNotes,
       if (venue != null) 'venue': venue,
+      if (workoutType != null) 'workout_type': workoutType,
       if (gymNumber != null) 'gym_number': gymNumber,
       if (active != null) 'active': active,
       if (createdAt != null) 'created_at': createdAt,
@@ -1722,6 +1819,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
     Value<EquipmentKind>? equipment,
     Value<LocalizedText>? safetyNotes,
     Value<ExerciseVenue>? venue,
+    Value<WorkoutType>? workoutType,
     Value<int?>? gymNumber,
     Value<bool>? active,
     Value<DateTime>? createdAt,
@@ -1742,6 +1840,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
       equipment: equipment ?? this.equipment,
       safetyNotes: safetyNotes ?? this.safetyNotes,
       venue: venue ?? this.venue,
+      workoutType: workoutType ?? this.workoutType,
       gymNumber: gymNumber ?? this.gymNumber,
       active: active ?? this.active,
       createdAt: createdAt ?? this.createdAt,
@@ -1810,6 +1909,11 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
         $ExercisesTable.$convertervenue.toSql(venue.value),
       );
     }
+    if (workoutType.present) {
+      map['workout_type'] = Variable<String>(
+        $ExercisesTable.$converterworkoutType.toSql(workoutType.value),
+      );
+    }
     if (gymNumber.present) {
       map['gym_number'] = Variable<int>(gymNumber.value);
     }
@@ -1844,6 +1948,7 @@ class ExercisesCompanion extends UpdateCompanion<Exercise> {
           ..write('equipment: $equipment, ')
           ..write('safetyNotes: $safetyNotes, ')
           ..write('venue: $venue, ')
+          ..write('workoutType: $workoutType, ')
           ..write('gymNumber: $gymNumber, ')
           ..write('active: $active, ')
           ..write('createdAt: $createdAt, ')
@@ -5839,6 +5944,7 @@ typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
   Value<ExerciseVenue> trainingVenue,
   Value<PreferredUnits> preferredUnits,
   Value<int?> defaultRestSeconds,
+  Value<TraineeAssessment?> assessment,
   Value<bool> active,
   required DateTime createdAt,
   required DateTime updatedAt,
@@ -5857,6 +5963,7 @@ typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
   Value<ExerciseVenue> trainingVenue,
   Value<PreferredUnits> preferredUnits,
   Value<int?> defaultRestSeconds,
+  Value<TraineeAssessment?> assessment,
   Value<bool> active,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -5978,6 +6085,12 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
   ColumnFilters<int> get defaultRestSeconds => $composableBuilder(
     column: $table.defaultRestSeconds,
     builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<TraineeAssessment?, TraineeAssessment, String>
+  get assessment => $composableBuilder(
+    column: $table.assessment,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
   ColumnFilters<bool> get active => $composableBuilder(
@@ -6115,6 +6228,11 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get assessment => $composableBuilder(
+    column: $table.assessment,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get active => $composableBuilder(
     column: $table.active,
     builder: (column) => ColumnOrderings(column),
@@ -6186,6 +6304,12 @@ class $$UsersTableAnnotationComposer
     column: $table.defaultRestSeconds,
     builder: (column) => column,
   );
+
+  GeneratedColumnWithTypeConverter<TraineeAssessment?, String> get assessment =>
+      $composableBuilder(
+        column: $table.assessment,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<bool> get active =>
       $composableBuilder(column: $table.active, builder: (column) => column);
@@ -6290,6 +6414,7 @@ class $$UsersTableTableManager
                 Value<ExerciseVenue> trainingVenue = const Value.absent(),
                 Value<PreferredUnits> preferredUnits = const Value.absent(),
                 Value<int?> defaultRestSeconds = const Value.absent(),
+                Value<TraineeAssessment?> assessment = const Value.absent(),
                 Value<bool> active = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
@@ -6307,6 +6432,7 @@ class $$UsersTableTableManager
                 trainingVenue: trainingVenue,
                 preferredUnits: preferredUnits,
                 defaultRestSeconds: defaultRestSeconds,
+                assessment: assessment,
                 active: active,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
@@ -6326,6 +6452,7 @@ class $$UsersTableTableManager
                 Value<ExerciseVenue> trainingVenue = const Value.absent(),
                 Value<PreferredUnits> preferredUnits = const Value.absent(),
                 Value<int?> defaultRestSeconds = const Value.absent(),
+                Value<TraineeAssessment?> assessment = const Value.absent(),
                 Value<bool> active = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
@@ -6343,6 +6470,7 @@ class $$UsersTableTableManager
                 trainingVenue: trainingVenue,
                 preferredUnits: preferredUnits,
                 defaultRestSeconds: defaultRestSeconds,
+                assessment: assessment,
                 active: active,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
@@ -6448,6 +6576,7 @@ typedef $$ExercisesTableCreateCompanionBuilder = ExercisesCompanion Function({
   required EquipmentKind equipment,
   required LocalizedText safetyNotes,
   Value<ExerciseVenue> venue,
+  Value<WorkoutType> workoutType,
   Value<int?> gymNumber,
   Value<bool> active,
   required DateTime createdAt,
@@ -6468,6 +6597,7 @@ typedef $$ExercisesTableUpdateCompanionBuilder = ExercisesCompanion Function({
   Value<EquipmentKind> equipment,
   Value<LocalizedText> safetyNotes,
   Value<ExerciseVenue> venue,
+  Value<WorkoutType> workoutType,
   Value<int?> gymNumber,
   Value<bool> active,
   Value<DateTime> createdAt,
@@ -6605,6 +6735,12 @@ class $$ExercisesTableFilterComposer
   ColumnWithTypeConverterFilters<ExerciseVenue, ExerciseVenue, String>
   get venue => $composableBuilder(
     column: $table.venue,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<WorkoutType, WorkoutType, String>
+  get workoutType => $composableBuilder(
+    column: $table.workoutType,
     builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 
@@ -6754,6 +6890,11 @@ class $$ExercisesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get workoutType => $composableBuilder(
+    column: $table.workoutType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get gymNumber => $composableBuilder(
     column: $table.gymNumber,
     builder: (column) => ColumnOrderings(column),
@@ -6839,6 +6980,12 @@ class $$ExercisesTableAnnotationComposer
 
   GeneratedColumnWithTypeConverter<ExerciseVenue, String> get venue =>
       $composableBuilder(column: $table.venue, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<WorkoutType, String> get workoutType =>
+      $composableBuilder(
+        column: $table.workoutType,
+        builder: (column) => column,
+      );
 
   GeneratedColumn<int> get gymNumber =>
       $composableBuilder(column: $table.gymNumber, builder: (column) => column);
@@ -6948,6 +7095,7 @@ class $$ExercisesTableTableManager
                 Value<EquipmentKind> equipment = const Value.absent(),
                 Value<LocalizedText> safetyNotes = const Value.absent(),
                 Value<ExerciseVenue> venue = const Value.absent(),
+                Value<WorkoutType> workoutType = const Value.absent(),
                 Value<int?> gymNumber = const Value.absent(),
                 Value<bool> active = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -6967,6 +7115,7 @@ class $$ExercisesTableTableManager
                 equipment: equipment,
                 safetyNotes: safetyNotes,
                 venue: venue,
+                workoutType: workoutType,
                 gymNumber: gymNumber,
                 active: active,
                 createdAt: createdAt,
@@ -6988,6 +7137,7 @@ class $$ExercisesTableTableManager
                 required EquipmentKind equipment,
                 required LocalizedText safetyNotes,
                 Value<ExerciseVenue> venue = const Value.absent(),
+                Value<WorkoutType> workoutType = const Value.absent(),
                 Value<int?> gymNumber = const Value.absent(),
                 Value<bool> active = const Value.absent(),
                 required DateTime createdAt,
@@ -7007,6 +7157,7 @@ class $$ExercisesTableTableManager
                 equipment: equipment,
                 safetyNotes: safetyNotes,
                 venue: venue,
+                workoutType: workoutType,
                 gymNumber: gymNumber,
                 active: active,
                 createdAt: createdAt,

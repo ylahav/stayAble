@@ -13,6 +13,15 @@ const equipmentKinds = [
   'bench',
 ] as const
 const venues = ['home', 'gym', 'both'] as const
+const workoutTypes = ['strength', 'aerobic', 'hiit', 'functional'] as const
+
+function workoutTypeFromCategory(
+  category: (typeof categories)[number],
+): (typeof workoutTypes)[number] {
+  if (category === 'strength') return 'strength'
+  if (category === 'cardio') return 'aerobic'
+  return 'functional'
+}
 const clientIdPattern = /^ex-[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 export type ExerciseDraft = {
@@ -28,6 +37,7 @@ export type ExerciseDraft = {
   targetMuscles?: string[] | null
   equipment: (typeof equipmentKinds)[number]
   venue: (typeof venues)[number]
+  workoutType: (typeof workoutTypes)[number]
   gymNumber?: number | null
   photoPath?: string | null
   active: false
@@ -107,6 +117,7 @@ export function validateExerciseDraft(value: unknown, index: number): ExerciseDr
     }
     const duration = optionalNumber(row.duration, 'duration')
     const repetitions = optionalNumber(row.repetitions, 'repetitions')
+    const category = oneOf(row.category, categories, 'category')
     const muscles = Array.isArray(row.targetMuscles)
       ? row.targetMuscles.map((item) => String(item).trim()).filter(Boolean)
       : []
@@ -127,13 +138,19 @@ export function validateExerciseDraft(value: unknown, index: number): ExerciseDr
       description: localized(row.description, 'description'),
       instructions: localized(row.instructions, 'instructions'),
       safetyNotes,
-      category: oneOf(row.category, categories, 'category'),
+      category,
       difficulty: oneOf(row.difficulty, difficulties, 'difficulty'),
       duration,
       repetitions,
       targetMuscles: muscles,
       equipment: oneOf(row.equipment, equipmentKinds, 'equipment', 'none'),
       venue: oneOf(row.venue, venues, 'venue', 'both'),
+      workoutType: oneOf(
+        row.workoutType,
+        workoutTypes,
+        'workoutType',
+        workoutTypeFromCategory(category),
+      ),
       gymNumber: optionalNumber(row.gymNumber, 'gymNumber'),
       photoPath,
       active: false,

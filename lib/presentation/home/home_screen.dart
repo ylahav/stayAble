@@ -8,8 +8,10 @@ import '../../core/l10n/labels.dart';
 import '../../core/widgets/app_version_label.dart';
 import '../../core/widgets/language_toggle.dart';
 import '../../core/widgets/stayable_async.dart';
+import '../../data/remote/catalog_check.dart';
 import '../../domain/domain.dart';
 import '../auth/auth_controller.dart';
+import '../profile/birthday_prompt.dart';
 import '../providers.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -29,11 +31,12 @@ class HomeScreen extends ConsumerWidget {
           icon: const Icon(Icons.settings_outlined),
           onPressed: () => context.push('/settings'),
         ),
-        PlinthActionIcon(
-          semanticLabel: l10n.logOut,
-          icon: const Icon(Icons.logout),
-          onPressed: () => ref.read(authProvider.notifier).logout(),
-        ),
+        if ((ref.watch(authProvider).value?.token.isNotEmpty ?? false))
+          PlinthActionIcon(
+            semanticLabel: l10n.logOut,
+            icon: const Icon(Icons.logout),
+            onPressed: () => ref.read(authProvider.notifier).logout(),
+          ),
       ],
       body: async.when(
         loading: () => const StayAbleLoading(),
@@ -55,6 +58,8 @@ class _HomeBody extends ConsumerWidget {
     final locale = Localizations.localeOf(context);
     final inProgressId = snapshot.inProgress?.session.id;
 
+    final catalogUpdate = ref.watch(catalogUpdateProvider);
+
     return ListView(
       padding: const EdgeInsets.fromLTRB(
         PlinthSpacing.lg,
@@ -63,6 +68,10 @@ class _HomeBody extends ConsumerWidget {
         PlinthSpacing.xl,
       ),
       children: [
+        if (catalogUpdate.available) ...[
+          _CatalogUpdateCard(update: catalogUpdate),
+          const PlinthSpace(h: PlinthSize.md),
+        ],
         if (snapshot.hasInProgress) _ContinueCard(info: snapshot.inProgress!),
         if (snapshot.hasInProgress) const PlinthSpace(h: PlinthSize.md),
         if (snapshot.isRestDay)
@@ -88,14 +97,11 @@ class _HomeBody extends ConsumerWidget {
               workout: snapshot.todayWorkouts[i],
               showPrimaryAction: inProgressId == null ||
                   inProgressId != snapshot.todayWorkouts[i].session?.id,
-              onStart: () async {
-                final session = await ref
-                    .read(repositoryProvider)
-                    .startOrResumeSession(snapshot.todayWorkouts[i].day.id);
-                if (!context.mounted) return;
-                ref.invalidate(homeSnapshotProvider);
-                context.push('/workout/${session.id}');
-              },
+              onStart: () => startProgramDay(
+                context: context,
+                ref: ref,
+                dayId: snapshot.todayWorkouts[i].day.id,
+              ),
             ),
           ],
         const PlinthSpace(h: PlinthSize.lg),
@@ -125,6 +131,43 @@ class _HomeBody extends ConsumerWidget {
   }
 }
 
+class _CatalogUpdateCard extends ConsumerWidget {
+  const _CatalogUpdateCard({required this.update});
+
+  final CatalogUpdate update;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    return PlinthCard(
+      withBorder: true,
+      header: PlinthBadge(l10n.catalogUpdateBadge),
+      footer: PlinthStack(
+        gap: PlinthSize.sm,
+        children: [
+          PlinthAsyncButton(
+            fullWidth: true,
+            onPressed: () => ref.read(authProvider.notifier).refreshCatalog(),
+            doneLabel: l10n.catalogRefreshed,
+            child: Text(l10n.catalogSyncNow),
+          ),
+          PlinthButton(
+            fullWidth: true,
+            variant: PlinthVariant.outline,
+            onPressed: () => ref.read(authProvider.notifier).dismissCatalogUpdate(),
+            child: Text(l10n.catalogUpdateLater),
+          ),
+        ],
+      ),
+      child: PlinthText(
+        update.newCount > 0
+            ? l10n.catalogUpdateAvailable(update.newCount)
+            : l10n.catalogUpdateChanged,
+      ),
+    );
+  }
+}
+
 class _ContinueCard extends ConsumerWidget {
   const _ContinueCard({required this.info});
 
@@ -143,15 +186,12 @@ class _ContinueCard extends ConsumerWidget {
       header: PlinthBadge(l10n.inProgress, color: 'green'),
       footer: PlinthButton(
         fullWidth: true,
-        onPressed: () async {
-          final session =
-              await ref.read(repositoryProvider).resumeSession(info.session.id);
-          if (!context.mounted) return;
-          ref.invalidate(homeSnapshotProvider);
-          ref.invalidate(programSnapshotProvider);
-          ref.invalidate(historySnapshotProvider);
-          context.push('/workout/${session.id}');
-        },
+        onPressed: () => startProgramDay(
+          context: context,
+          ref: ref,
+          dayId: info.day.id,
+          resumeSessionId: info.session.id,
+        ),
         child: Text(l10n.resumeWorkout),
       ),
       child: PlinthStack(

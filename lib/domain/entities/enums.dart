@@ -24,11 +24,26 @@ enum EquipmentKind {
 
 enum ExerciseVenue { home, gym, both }
 
+enum WorkoutType { strength, aerobic, hiit, functional }
+
+WorkoutType workoutTypeFromCategory(ExerciseCategory category) {
+  return switch (category) {
+    ExerciseCategory.strength => WorkoutType.strength,
+    ExerciseCategory.cardio => WorkoutType.aerobic,
+    _ => WorkoutType.functional,
+  };
+}
+
 enum ProgramVenue { home, gym, mixed }
 
 enum PreferredUnits { kg, lbs }
 
-enum ScheduleType { daily, weekly, custom }
+enum ScheduleType { daily, weekly, custom, occasional }
+
+/// Slot map key for programs that are not bound to a weekday.
+const occasionalSlotKey = 0;
+
+bool isAnytimeSchedule(ScheduleType type) => type == ScheduleType.occasional;
 
 enum WorkoutStatus {
   planned,
@@ -49,4 +64,5 @@ enum FitnessGoal {
   mobility,
   cardio,
   weightManagement,
+  bodyToning,
 }

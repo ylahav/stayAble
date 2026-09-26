@@ -21,10 +21,61 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
   DriftStayAbleRepository(this.db);
 
   final AppDatabase db;
+  String? _currentUserId;
 
   Future<User> _userRow() async {
+    final id = _currentUserId;
+    if (id != null) {
+      final match = await (db.select(db.users)..where((t) => t.id.equals(id)))
+          .getSingleOrNull();
+      if (match != null) return match;
+    }
     final rows = await db.select(db.users).get();
-    return rows.first;
+    return rows.firstWhere(
+      (row) => row.id == domain.anonymousLocalUserId,
+      orElse: () => rows.first,
+    );
+  }
+
+  @override
+  Future<void> useUserId(String id) async {
+    _currentUserId = id;
+  }
+
+  @override
+  Future<void> ensureSignedInUser({
+    required String id,
+    required String name,
+    required String email,
+    required String language,
+  }) async {
+    final now = DateTime.now();
+    final existing = await (db.select(db.users)..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (existing == null) {
+      await db.into(db.users).insert(
+            UsersCompanion.insert(
+              id: id,
+              name: name.isEmpty ? email : name,
+              email: Value(email),
+              fitnessLevel: domain.FitnessLevel.beginner,
+              goals: const [domain.FitnessGoal.generalFitness],
+              language: language,
+              createdAt: now,
+              updatedAt: now,
+            ),
+          );
+    } else {
+      await (db.update(db.users)..where((t) => t.id.equals(id))).write(
+        UsersCompanion(
+          name: Value(name.isEmpty ? existing.name : name),
+          email: Value(email),
+          language: Value(language),
+          updatedAt: Value(now),
+        ),
+      );
+    }
+    _currentUserId = id;
   }
 
   @override
@@ -42,9 +93,84 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
   }
 
   @override
+  Future<void> setBirthDate(DateTime birthDate) async {
+    final user = await _userRow();
+    await (db.update(db.users)..where((t) => t.id.equals(user.id))).write(
+      UsersCompanion(
+        birthDate: Value(dateOnly(birthDate)),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  @override
+  Future<void> setAssessment(domain.TraineeAssessment assessment) async {
+    final user = await _userRow();
+    await (db.update(db.users)..where((t) => t.id.equals(user.id))).write(
+      UsersCompanion(
+        assessment: Value(assessment),
+        fitnessLevel: Value(
+          assessment.derivedLevel(
+            domain.ageYearsFromBirthDate(user.birthDate) ?? 40,
+          ),
+        ),
+        goals: Value(
+          assessment.goals.isEmpty
+              ? const [domain.FitnessGoal.generalFitness]
+              : assessment.goals,
+        ),
+        trainingVenue: Value(
+          assessment.resolvedVenue == domain.ProgramVenue.gym
+              ? domain.ExerciseVenue.gym
+              : assessment.resolvedVenue == domain.ProgramVenue.home
+                  ? domain.ExerciseVenue.home
+                  : domain.ExerciseVenue.both,
+        ),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  @override
+  Future<void> applyRemoteProfile({
+    DateTime? birthDate,
+    domain.TraineeAssessment? assessment,
+    domain.FitnessLevel? fitnessLevel,
+    List<domain.FitnessGoal>? goals,
+    domain.ExerciseVenue? trainingVenue,
+  }) async {
+    if (birthDate != null) {
+      await setBirthDate(birthDate);
+    }
+    if (assessment != null) {
+      await setAssessment(assessment);
+      return;
+    }
+    if (fitnessLevel == null && goals == null && trainingVenue == null) {
+      return;
+    }
+    final user = await _userRow();
+    await (db.update(db.users)..where((t) => t.id.equals(user.id))).write(
+      UsersCompanion(
+        fitnessLevel: fitnessLevel != null
+            ? Value(fitnessLevel)
+            : const Value.absent(),
+        goals: goals != null ? Value(goals) : const Value.absent(),
+        trainingVenue: trainingVenue != null
+            ? Value(trainingVenue)
+            : const Value.absent(),
+        updatedAt: Value(DateTime.now()),
+      ),
+    );
+  }
+
+  @override
   Future<List<domain.Exercise>> getExercises({
     domain.ExerciseCategory? category,
+    domain.WorkoutType? workoutType,
+    bool homeCapable = false,
     String? query,
+    List<String>? tags,
   }) async {
     final rows = await (db.select(db.exercises)
           ..where((t) => t.active.equals(true))
@@ -53,6 +179,26 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
     var items = rows.map(mapExercise).toList();
     if (category != null) {
       items = items.where((e) => e.category == category).toList();
+    }
+    if (workoutType != null) {
+      items = items.where((e) => e.workoutType == workoutType).toList();
+    }
+    if (homeCapable) {
+      items = items.where((e) => e.canDoAtHome).toList();
+    }
+    if (tags != null && tags.isNotEmpty) {
+      items = items.where((exercise) {
+        final keys = {
+          'cat:${exercise.category.name}',
+          'type:${exercise.workoutType.name}',
+          'venue:${exercise.venue.name}',
+          'diff:${exercise.difficulty.name}',
+          if (exercise.equipment != domain.EquipmentKind.none)
+            'eq:${exercise.equipment.name}',
+          for (final muscle in exercise.targetMuscles) 'muscle:$muscle',
+        };
+        return tags.every(keys.contains);
+      }).toList();
     }
     final q = query?.trim().toLowerCase();
     if (q != null && q.isNotEmpty) {
@@ -73,16 +219,28 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
   }
 
   @override
+  Future<Set<String>> getExerciseIds() async {
+    final rows = await (db.select(db.exercises)
+          ..where((t) => t.active.equals(true)))
+        .get();
+    return rows.map((row) => row.id).toSet();
+  }
+
+  @override
   Future<domain.Exercise?> getExercise(String id) async {
     final row = await (db.select(db.exercises)..where((t) => t.id.equals(id)))
         .getSingleOrNull();
     return row == null ? null : mapExercise(row);
   }
 
-  Future<List<TrainingProgram>> _activePrograms(String userId) async {
+  Future<List<TrainingProgram>> _activePrograms(
+    String userId, {
+    required bool localOnly,
+  }) async {
     final rows = await (db.select(db.trainingPrograms)
           ..where((t) => t.userId.equals(userId) & t.active.equals(true)))
         .get();
+    rows.removeWhere((row) => domain.isLocalProgramId(row.id) != localOnly);
     rows.sort((a, b) {
       final venue = a.venue.index.compareTo(b.venue.index);
       if (venue != 0) return venue;
@@ -95,6 +253,10 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
     final days = await (db.select(db.programDays)
           ..where((t) => t.programId.equals(program.id)))
         .get();
+    if (domain.isAnytimeSchedule(program.scheduleType)) {
+      return days.where((day) => day.weekday == null).firstOrNull ??
+          (days.isEmpty ? null : days.first);
+    }
     final today = dateOnly(now);
     for (final day in days) {
       if (day.date != null && isSameDay(day.date!, today)) return day;
@@ -195,14 +357,27 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
         .getSingle());
   }
 
-  Future<domain.InProgressInfo?> _inProgressInfo(String userId) async {
+  Future<Set<String>> _dayIds({required bool localOnly}) async {
+    final days = await db.select(db.programDays).get();
+    return {
+      for (final day in days)
+        if (domain.isLocalProgramId(day.programId) == localOnly) day.id,
+    };
+  }
+
+  Future<domain.InProgressInfo?> _inProgressInfo(
+    String userId, {
+    required bool localOnly,
+  }) async {
     final rows = await (db.select(db.workoutSessions)
           ..where((t) => t.userId.equals(userId))
           ..orderBy([(t) => OrderingTerm.desc(t.startedAt)]))
         .get();
+    final allowedDays = await _dayIds(localOnly: localOnly);
     WorkoutSession? row;
     for (final candidate in rows) {
-      if (_resumable(candidate.status)) {
+      if (_resumable(candidate.status) &&
+          allowedDays.contains(candidate.programDayId)) {
         row = candidate;
         break;
       }
@@ -225,9 +400,12 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
   }
 
   @override
-  Future<domain.HomeSnapshot> getHomeSnapshot(DateTime now) async {
+  Future<domain.HomeSnapshot> getHomeSnapshot(
+    DateTime now, {
+    required bool localOnly,
+  }) async {
     final user = await _userRow();
-    final programs = await _activePrograms(user.id);
+    final programs = await _activePrograms(user.id, localOnly: localOnly);
     final todayWorkouts = <domain.TodayWorkout>[];
     for (final program in programs) {
       final todayDay = await _todayDay(program, now);
@@ -245,19 +423,26 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
     return domain.HomeSnapshot(
       user: mapUser(user),
       todayWorkouts: todayWorkouts,
-      inProgress: await _inProgressInfo(user.id),
-      weekStats: await _weekStats(user.id, now),
+      inProgress: await _inProgressInfo(user.id, localOnly: localOnly),
+      weekStats: await _weekStats(user.id, now, localOnly: localOnly),
     );
   }
 
-  Future<domain.WeekStats> _weekStats(String userId, DateTime now) async {
+  Future<domain.WeekStats> _weekStats(
+    String userId,
+    DateTime now, {
+    required bool localOnly,
+  }) async {
     final weekStart = startOfWeekMonday(now);
     final weekEnd = weekStart.add(const Duration(days: 7));
+    final allowedDays = await _dayIds(localOnly: localOnly);
     final sessions = await (db.select(db.workoutSessions)
           ..where((t) => t.userId.equals(userId)))
         .get();
     final weekSessions = sessions.where((s) {
-      return !s.startedAt.isBefore(weekStart) && s.startedAt.isBefore(weekEnd);
+      return allowedDays.contains(s.programDayId) &&
+          !s.startedAt.isBefore(weekStart) &&
+          s.startedAt.isBefore(weekEnd);
     }).toList();
     final counted = weekSessions.where((s) {
       return s.status == domain.WorkoutStatus.completed ||
@@ -276,7 +461,7 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
 
     var scheduledSoFar = 0;
     var completedScheduled = 0;
-    final programs = await _activePrograms(userId);
+    final programs = await _activePrograms(userId, localOnly: localOnly);
     for (final program in programs) {
       final days = await (db.select(db.programDays)
             ..where((t) => t.programId.equals(program.id)))
@@ -307,9 +492,14 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
     );
   }
 
-  Future<domain.MonthStats> _monthStats(String userId, DateTime now) async {
+  Future<domain.MonthStats> _monthStats(
+    String userId,
+    DateTime now, {
+    required bool localOnly,
+  }) async {
     final start = DateTime(now.year, now.month, 1);
     final end = DateTime(now.year, now.month + 1, 1);
+    final allowedDays = await _dayIds(localOnly: localOnly);
     final sessions = await (db.select(db.workoutSessions)
           ..where((t) => t.userId.equals(userId)))
         .get();
@@ -318,7 +508,7 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
           !s.startedAt.isBefore(start) && s.startedAt.isBefore(end);
       final done = s.status == domain.WorkoutStatus.completed ||
           s.status == domain.WorkoutStatus.partiallyCompleted;
-      return inRange && done;
+      return allowedDays.contains(s.programDayId) && inRange && done;
     }).toList();
     var minutes = 0;
     for (final s in month) {
@@ -328,9 +518,12 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
   }
 
   @override
-  Future<domain.ProgramSnapshot> getProgramSnapshot(DateTime now) async {
+  Future<domain.ProgramSnapshot> getProgramSnapshot(
+    DateTime now, {
+    required bool localOnly,
+  }) async {
     final user = await _userRow();
-    final programs = await _activePrograms(user.id);
+    final programs = await _activePrograms(user.id, localOnly: localOnly);
     final views = <domain.AssignedProgramView>[];
     for (final program in programs) {
       views.add(await _assignedProgramView(user.id, program, now));
@@ -352,24 +545,38 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
     final inProgressByDayId = <String, String>{};
     final weekStart = startOfWeekMonday(now);
     for (final day in days) {
+      if (day.weekday == null &&
+          !domain.isAnytimeSchedule(program.scheduleType)) {
+        continue;
+      }
       exercisesByDay[day.id] = await _itemsForDay(day.id);
       final todaySession = await _todaysSession(userId, day.id, now);
       if (todaySession != null && _resumable(todaySession.status)) {
         inProgressByDayId[day.id] = todaySession.id;
       }
-      if (day.weekday != null) {
-        final dayDate = weekStart.add(Duration(days: day.weekday! - 1));
-        final session = await _todaysSession(userId, day.id, dayDate);
-        if (session != null &&
-            session.status == domain.WorkoutStatus.completed &&
-            isSameDay(session.startedAt, dayDate)) {
+      if (day.weekday == null) {
+        if (todaySession != null &&
+            todaySession.status == domain.WorkoutStatus.completed) {
           completed.add(day.id);
         }
+        continue;
+      }
+      final dayDate = weekStart.add(Duration(days: day.weekday! - 1));
+      final session = await _todaysSession(userId, day.id, dayDate);
+      if (session != null &&
+          session.status == domain.WorkoutStatus.completed &&
+          isSameDay(session.startedAt, dayDate)) {
+        completed.add(day.id);
       }
     }
     return domain.AssignedProgramView(
       program: mapProgram(program),
-      days: days.map(mapProgramDay).toList(),
+      days: [
+        for (final day in days)
+          if (day.weekday != null ||
+              domain.isAnytimeSchedule(program.scheduleType))
+            mapProgramDay(day),
+      ],
       exercisesByDay: exercisesByDay,
       completedDayIds: completed,
       inProgressByDayId: inProgressByDayId,
@@ -377,21 +584,29 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
   }
 
   @override
-  Future<domain.HistorySnapshot> getHistorySnapshot(DateTime now) async {
+  Future<domain.HistorySnapshot> getHistorySnapshot(
+    DateTime now, {
+    required bool localOnly,
+  }) async {
     final user = await _userRow();
+    final allowedDays = await _dayIds(localOnly: localOnly);
     final sessions = await (db.select(db.workoutSessions)
           ..where((t) => t.userId.equals(user.id))
           ..orderBy([(t) => OrderingTerm.desc(t.startedAt)]))
         .get();
     final days = await db.select(db.programDays).get();
     final dayMap = {
-      for (final day in days) day.id: mapProgramDay(day),
+      for (final day in days)
+        if (allowedDays.contains(day.id)) day.id: mapProgramDay(day),
     };
     return domain.HistorySnapshot(
-      sessions: sessions.map(mapSession).toList(),
+      sessions: [
+        for (final session in sessions)
+          if (allowedDays.contains(session.programDayId)) mapSession(session),
+      ],
       dayTitles: dayMap,
-      weekStats: await _weekStats(user.id, now),
-      monthStats: await _monthStats(user.id, now),
+      weekStats: await _weekStats(user.id, now, localOnly: localOnly),
+      monthStats: await _monthStats(user.id, now, localOnly: localOnly),
       notesBySessionId: await _notesBySessionId(),
     );
   }
@@ -615,6 +830,7 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
               equipment: item.equipment,
               safetyNotes: item.safetyNotes,
               venue: Value(item.venue),
+              workoutType: Value(item.workoutType),
               gymNumber: Value(item.gymNumber),
               active: Value(item.active),
               createdAt: item.createdAt,
@@ -698,8 +914,179 @@ class DriftStayAbleRepository implements domain.StayAbleRepository {
             .write(const ProgramExercisesCompanion(active: Value(false)));
       }
     }
-    await (db.update(db.trainingPrograms)
+    final stale = await (db.select(db.trainingPrograms)
           ..where((t) => t.userId.equals(user.id) & t.id.isNotIn(ids)))
-        .write(const TrainingProgramsCompanion(active: Value(false)));
+        .get();
+    for (final row in stale) {
+      if (domain.isLocalProgramId(row.id)) continue;
+      await (db.update(db.trainingPrograms)..where((t) => t.id.equals(row.id)))
+          .write(const TrainingProgramsCompanion(active: Value(false)));
+    }
+  }
+
+  @override
+  Future<String> saveLocalProgram(domain.LocalProgramDraft draft) async {
+    final user = await _userRow();
+    final now = DateTime.now();
+    final id = draft.id ?? '${domain.localProgramPrefix}${_uuid.v4()}';
+    final occasional = draft.isOccasional;
+    final keys = occasional
+        ? const [domain.occasionalSlotKey]
+        : ([...draft.weekdays]..sort());
+    await db.into(db.trainingPrograms).insertOnConflictUpdate(
+          TrainingProgramsCompanion.insert(
+            id: id,
+            userId: user.id,
+            name: draft.name.trim(),
+            description: '',
+            scheduleType: occasional
+                ? domain.ScheduleType.occasional
+                : draft.scheduleType,
+            venue: Value(draft.venue),
+            active: const Value(true),
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
+
+    final existingDays = await (db.select(db.programDays)
+          ..where((t) => t.programId.equals(id)))
+        .get();
+    final keepDayIds = <String>{};
+    for (final key in keys) {
+      final dayId = occasional ? '$id-day-any' : '$id-day-$key';
+      keepDayIds.add(dayId);
+      await db.into(db.programDays).insertOnConflictUpdate(
+            ProgramDaysCompanion.insert(
+              id: dayId,
+              programId: id,
+              weekday: occasional ? const Value(null) : Value(key),
+              title: occasional
+                  ? const domain.LocalizedText(
+                      en: 'Anytime',
+                      he: 'מתי שרוצים',
+                    )
+                  : _localDayTitle(key),
+              description: const domain.LocalizedText(en: '', he: ''),
+            ),
+          );
+      final slots = draft.slotsByWeekday[key] ?? const [];
+      final keepSlots = <String>[];
+      for (var index = 0; index < slots.length; index++) {
+        final slot = slots[index];
+        final slotId = '$dayId-ex-$index';
+        keepSlots.add(slotId);
+        await db.into(db.programExercises).insertOnConflictUpdate(
+              ProgramExercisesCompanion.insert(
+                id: slotId,
+                programDayId: dayId,
+                exerciseId: slot.exerciseId,
+                sortOrder: index,
+                sets: slot.sets,
+                repetitions: Value(slot.repetitions),
+                duration: Value(slot.duration),
+                loadKg: Value(slot.loadKg),
+                rest: Value(slot.rest),
+                active: const Value(true),
+              ),
+            );
+      }
+      final staleSlots = await (db.select(db.programExercises)
+            ..where((t) {
+              final onDay = t.programDayId.equals(dayId);
+              return keepSlots.isEmpty
+                  ? onDay
+                  : onDay & t.id.isNotIn(keepSlots);
+            }))
+          .get();
+      for (final row in staleSlots) {
+        await (db.update(db.programExercises)..where((t) => t.id.equals(row.id)))
+            .write(const ProgramExercisesCompanion(active: Value(false)));
+      }
+    }
+    for (final day in existingDays) {
+      if (keepDayIds.contains(day.id)) continue;
+      await (db.update(db.programDays)..where((t) => t.id.equals(day.id)))
+          .write(const ProgramDaysCompanion(weekday: Value(null)));
+      await (db.update(db.programExercises)
+            ..where((t) => t.programDayId.equals(day.id)))
+          .write(const ProgramExercisesCompanion(active: Value(false)));
+    }
+    return id;
+  }
+
+  domain.LocalizedText _localDayTitle(int weekday) {
+    return switch (weekday) {
+      DateTime.monday =>
+        const domain.LocalizedText(en: 'Monday', he: 'שני'),
+      DateTime.tuesday =>
+        const domain.LocalizedText(en: 'Tuesday', he: 'שלישי'),
+      DateTime.wednesday =>
+        const domain.LocalizedText(en: 'Wednesday', he: 'רביעי'),
+      DateTime.thursday =>
+        const domain.LocalizedText(en: 'Thursday', he: 'חמישי'),
+      DateTime.friday =>
+        const domain.LocalizedText(en: 'Friday', he: 'שישי'),
+      DateTime.saturday =>
+        const domain.LocalizedText(en: 'Saturday', he: 'שבת'),
+      DateTime.sunday =>
+        const domain.LocalizedText(en: 'Sunday', he: 'ראשון'),
+      _ => domain.LocalizedText(en: 'Day $weekday', he: ''),
+    };
+  }
+
+  @override
+  Future<domain.LocalProgramDraft?> getLocalProgram(String id) async {
+    if (!domain.isLocalProgramId(id)) return null;
+    final row = await (db.select(db.trainingPrograms)
+          ..where((t) => t.id.equals(id) & t.active.equals(true)))
+        .getSingleOrNull();
+    if (row == null) return null;
+    final days = await (db.select(db.programDays)
+          ..where((t) => t.programId.equals(id)))
+        .get();
+    final weekdays = <int>[];
+    final slots = <int, List<domain.LocalProgramSlot>>{};
+    final occasional = domain.isAnytimeSchedule(row.scheduleType);
+    for (final day in days) {
+      final weekday = day.weekday;
+      if (weekday == null && !occasional) continue;
+      final key = weekday ?? domain.occasionalSlotKey;
+      if (weekday != null) weekdays.add(weekday);
+      final assignments = await (db.select(db.programExercises)
+            ..where(
+              (t) => t.programDayId.equals(day.id) & t.active.equals(true),
+            )
+            ..orderBy([(t) => OrderingTerm.asc(t.sortOrder)]))
+          .get();
+      slots[key] = [
+        for (final assignment in assignments)
+          domain.LocalProgramSlot(
+            exerciseId: assignment.exerciseId,
+            sets: assignment.sets,
+            repetitions: assignment.repetitions,
+            duration: assignment.duration,
+            loadKg: assignment.loadKg,
+            rest: assignment.rest,
+          ),
+      ];
+    }
+    weekdays.sort();
+    return domain.LocalProgramDraft(
+      id: id,
+      name: row.name,
+      venue: row.venue,
+      scheduleType: row.scheduleType,
+      weekdays: weekdays,
+      slotsByWeekday: slots,
+    );
+  }
+
+  @override
+  Future<void> deleteLocalProgram(String id) async {
+    if (!domain.isLocalProgramId(id)) return;
+    await (db.update(db.trainingPrograms)..where((t) => t.id.equals(id))).write(
+      const TrainingProgramsCompanion(active: Value(false)),
+    );
   }
 }

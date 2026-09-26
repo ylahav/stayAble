@@ -1,7 +1,7 @@
 name: stayable
 description: StayAble — keep your body able. Home or gym training, planned vs actual.
 publish_to: "none"
-version: 1.0.2
+version: 1.1.0
 
 environment:
   sdk: ^3.13.1
@@ -17,15 +17,16 @@ dependencies:
   flutter_riverpod: ^3.4.3
   go_router: ^18.0.1
   google_fonts: ^8.2.1
-  intl: any
+  intl: 0.20.3
   path: ^1.9.1
   path_provider: ^2.1.5
   uuid: ^4.5.1
   http: ^1.5.0
   shared_preferences: ^2.5.3
-  flutter_secure_storage: ^9.2.4
-  audioplayers: ^6.5.1
-  plinth_blocks: ^0.2.2
+  flutter_secure_storage: ^10.3.4
+  crypto: ^3.0.7
+  audioplayers: ^6.8.1
+  plinth_blocks: ^0.4.0
   plinth_charts: ^0.1.1
 
 dev_dependencies:

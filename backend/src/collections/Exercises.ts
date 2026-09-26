@@ -9,7 +9,7 @@ import { stripLoopbackOrigin } from '../lib/publicOrigin'
 export const Exercises: CollectionConfig = withCatalogTransfer({
   slug: 'exercises',
   admin: {
-    defaultColumns: ['image', 'adminTitle', 'venue', 'gymNumber', 'category'],
+    defaultColumns: ['image', 'adminTitle', 'workoutType', 'venue', 'gymNumber', 'category'],
     useAsTitle: 'adminTitle',
     description:
       'Exercise library. Seeded rows keep ids like ex-squat. New rows get a client id automatically.',
@@ -78,6 +78,22 @@ export const Exercises: CollectionConfig = withCatalogTransfer({
       required: true,
       admin: {
         description: 'Where this exercise can be performed',
+      },
+    },
+    {
+      name: 'workoutType',
+      type: 'select',
+      defaultValue: 'strength',
+      options: [
+        { label: 'Strength / hypertrophy', value: 'strength' },
+        { label: 'Aerobic', value: 'aerobic' },
+        { label: 'HIIT', value: 'hiit' },
+        { label: 'Functional', value: 'functional' },
+      ],
+      required: true,
+      admin: {
+        description:
+          'Main training style: resistance, cardio endurance, intervals, or everyday movement.',
       },
     },
     {

@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 import '../../domain/entities/enums.dart';
 import '../../domain/entities/localized_text.dart';
+import '../../domain/entities/trainee_assessment.dart';
 import 'converters.dart';
 import 'tables.dart';
 
@@ -28,7 +29,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -52,6 +53,12 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 3) {
             await m.addColumn(programExercises, programExercises.active);
+          }
+          if (from < 4) {
+            await m.addColumn(exercises, exercises.workoutType);
+          }
+          if (from < 5) {
+            await m.addColumn(users, users.assessment);
           }
         },
       );

@@ -23,6 +23,7 @@ class SeedRunner {
       await _seed(language: language);
     }
     await ensureExercises();
+    await removeFirstRunProgram();
   }
 
   Future<void> ensureExercises() async {
@@ -36,7 +37,11 @@ class SeedRunner {
         await db.into(db.exercises).insert(exercise);
       } else {
         await (db.update(db.exercises)..where((t) => t.id.equals(id))).write(
-          ExercisesCompanion(photo: exercise.photo),
+          ExercisesCompanion(
+            photo: exercise.photo,
+            workoutType: exercise.workoutType,
+            venue: exercise.venue,
+          ),
         );
       }
     }
@@ -60,6 +65,26 @@ class SeedRunner {
 
     for (final exercise in _exercises(now)) {
       await db.into(db.exercises).insert(exercise);
+    }
+  }
+
+  Future<void> removeFirstRunProgram() async {
+    await (db.update(db.trainingPrograms)
+          ..where((t) => t.id.equals(programId) & t.userId.equals(localUserId)))
+        .write(
+      const TrainingProgramsCompanion(active: Value(false)),
+    );
+  }
+
+  Future<void> seedDemoProgram() async {
+    final now = DateTime.now();
+    final existing = await (db.select(db.trainingPrograms)
+          ..where((t) => t.id.equals(programId)))
+        .getSingleOrNull();
+    if (existing != null) {
+      await (db.update(db.trainingPrograms)..where((t) => t.id.equals(programId)))
+          .write(const TrainingProgramsCompanion(active: Value(true)));
+      return;
     }
 
     await db.into(db.trainingPrograms).insert(
@@ -146,6 +171,24 @@ class _PlanRow {
   final int rest;
 }
 
+const _workoutTypeOverrides = <String, WorkoutType>{
+  'ex-march': WorkoutType.aerobic,
+  'ex-plank': WorkoutType.functional,
+  'ex-dead-bug': WorkoutType.functional,
+  'ex-bird-dog': WorkoutType.functional,
+  'ex-side-plank': WorkoutType.functional,
+  'ex-bosu-hold': WorkoutType.functional,
+  'ex-superman': WorkoutType.functional,
+  'ex-dolphin': WorkoutType.functional,
+  'ex-high-march-chair': WorkoutType.aerobic,
+  'ex-step-jacks-low': WorkoutType.aerobic,
+  'ex-shadow-boxing': WorkoutType.hiit,
+  'ex-skater-taps': WorkoutType.hiit,
+  'ex-butt-kicks-lat': WorkoutType.hiit,
+  'ex-seated-fast-feet': WorkoutType.hiit,
+  'ex-chair-incline-burpee': WorkoutType.hiit,
+};
+
 List<ExercisesCompanion> _exercises(DateTime now) {
   ExercisesCompanion item({
     required String id,
@@ -159,6 +202,7 @@ List<ExercisesCompanion> _exercises(DateTime now) {
     required List<String> muscles,
     LocalizedText? safety,
     ExerciseVenue venue = ExerciseVenue.both,
+    WorkoutType? workoutType,
     EquipmentKind equipment = EquipmentKind.none,
   }) {
     return ExercisesCompanion.insert(
@@ -174,6 +218,11 @@ List<ExercisesCompanion> _exercises(DateTime now) {
       targetMuscles: muscles,
       equipment: equipment,
       venue: Value(venue),
+      workoutType: Value(
+        workoutType ??
+            _workoutTypeOverrides[id] ??
+            workoutTypeFromCategory(category),
+      ),
       safetyNotes: safety ??
           _t(
             'Move within a comfortable range. Stop if you feel sharp pain.',

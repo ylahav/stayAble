@@ -4,6 +4,7 @@ import '../entities/exercise.dart';
 import '../entities/localized_text.dart';
 import '../entities/program_day.dart';
 import '../entities/program_exercise.dart';
+import '../entities/trainee_assessment.dart';
 import '../entities/training_program.dart';
 import '../entities/workout_exercise_result.dart';
 import '../entities/workout_session.dart';
@@ -163,6 +164,66 @@ class WorkoutPlayback {
   final Map<String, List<WorkoutSetResult>> setsByResult;
 }
 
+class LocalProgramSlot {
+  const LocalProgramSlot({
+    required this.exerciseId,
+    required this.sets,
+    this.repetitions,
+    this.duration,
+    this.loadKg,
+    this.rest = 30,
+  });
+
+  final String exerciseId;
+  final int sets;
+  final int? repetitions;
+  final int? duration;
+  final double? loadKg;
+  final int rest;
+
+  LocalProgramSlot copyWith({
+    String? exerciseId,
+    int? sets,
+    int? repetitions,
+    int? duration,
+    double? loadKg,
+    int? rest,
+    bool clearRepetitions = false,
+    bool clearDuration = false,
+    bool clearLoadKg = false,
+  }) {
+    return LocalProgramSlot(
+      exerciseId: exerciseId ?? this.exerciseId,
+      sets: sets ?? this.sets,
+      repetitions:
+          clearRepetitions ? null : (repetitions ?? this.repetitions),
+      duration: clearDuration ? null : (duration ?? this.duration),
+      loadKg: clearLoadKg ? null : (loadKg ?? this.loadKg),
+      rest: rest ?? this.rest,
+    );
+  }
+}
+
+class LocalProgramDraft {
+  const LocalProgramDraft({
+    this.id,
+    required this.name,
+    required this.venue,
+    this.scheduleType = ScheduleType.weekly,
+    required this.weekdays,
+    required this.slotsByWeekday,
+  });
+
+  final String? id;
+  final String name;
+  final ProgramVenue venue;
+  final ScheduleType scheduleType;
+  final List<int> weekdays;
+  final Map<int, List<LocalProgramSlot>> slotsByWeekday;
+
+  bool get isOccasional => isAnytimeSchedule(scheduleType);
+}
+
 class RemoteProgramTree {
   const RemoteProgramTree({
     required this.program,
@@ -177,17 +238,37 @@ class RemoteProgramTree {
 
 abstract class StayAbleRepository {
   Future<AppUser> getCurrentUser();
+  Future<void> useUserId(String id);
+  Future<void> ensureSignedInUser({
+    required String id,
+    required String name,
+    required String email,
+    required String language,
+  });
   Future<void> setLanguage(String languageCode);
+  Future<void> setBirthDate(DateTime birthDate);
+  Future<void> setAssessment(TraineeAssessment assessment);
+  Future<void> applyRemoteProfile({
+    DateTime? birthDate,
+    TraineeAssessment? assessment,
+    FitnessLevel? fitnessLevel,
+    List<FitnessGoal>? goals,
+    ExerciseVenue? trainingVenue,
+  });
 
   Future<List<Exercise>> getExercises({
     ExerciseCategory? category,
+    WorkoutType? workoutType,
+    bool homeCapable = false,
     String? query,
+    List<String>? tags,
   });
+  Future<Set<String>> getExerciseIds();
   Future<Exercise?> getExercise(String id);
 
-  Future<HomeSnapshot> getHomeSnapshot(DateTime now);
-  Future<ProgramSnapshot> getProgramSnapshot(DateTime now);
-  Future<HistorySnapshot> getHistorySnapshot(DateTime now);
+  Future<HomeSnapshot> getHomeSnapshot(DateTime now, {required bool localOnly});
+  Future<ProgramSnapshot> getProgramSnapshot(DateTime now, {required bool localOnly});
+  Future<HistorySnapshot> getHistorySnapshot(DateTime now, {required bool localOnly});
 
   Future<WorkoutSession> startOrResumeSession(String programDayId);
   Future<WorkoutSession> resumeSession(String sessionId);
@@ -198,4 +279,7 @@ abstract class StayAbleRepository {
   Future<void> finishSession(String sessionId, {required bool partial});
   Future<void> upsertExercises(List<Exercise> items);
   Future<void> upsertAssignedPrograms(List<RemoteProgramTree> trees);
+  Future<LocalProgramDraft?> getLocalProgram(String id);
+  Future<String> saveLocalProgram(LocalProgramDraft draft);
+  Future<void> deleteLocalProgram(String id);
 }

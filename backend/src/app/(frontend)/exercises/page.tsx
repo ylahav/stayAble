@@ -12,6 +12,13 @@ const venueLabel: Record<string, string> = {
   both: 'Home + gym',
 }
 
+const workoutTypeLabel: Record<string, string> = {
+  strength: 'Strength',
+  aerobic: 'Aerobic',
+  hiit: 'HIIT',
+  functional: 'Functional',
+}
+
 export default async function ExercisesPage() {
   const user = await getCurrentUser()
   if (!user) redirect('/login?next=/exercises')
@@ -66,6 +73,7 @@ export default async function ExercisesPage() {
                 <th>Name</th>
                 <th>#</th>
                 <th>Where</th>
+                <th>Type</th>
                 <th>Level</th>
                 <th>Status</th>
               </tr>
@@ -73,7 +81,7 @@ export default async function ExercisesPage() {
             <tbody>
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="muted">
+                  <td colSpan={7} className="muted">
                     No exercises yet. Import JSON to add drafts.
                   </td>
                 </tr>
@@ -94,6 +102,7 @@ export default async function ExercisesPage() {
                   <td>{row.name?.en || row.name?.he || '—'}</td>
                   <td className="muted">{row.gymNumber ?? '—'}</td>
                   <td>{venueLabel[row.venue ?? 'both']}</td>
+                  <td>{workoutTypeLabel[row.workoutType ?? 'strength']}</td>
                   <td>{row.difficulty}</td>
                   <td>
                     <span className="pill">{row.active ? 'Active' : 'Inactive'}</span>

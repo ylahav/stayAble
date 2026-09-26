@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:plinth_blocks/plinth_blocks.dart';
 import 'package:plinth_charts/plinth_charts.dart';
@@ -12,6 +11,7 @@ import '../../core/widgets/note_composer.dart';
 import '../../core/widgets/stayable_async.dart';
 import '../../domain/domain.dart';
 import '../auth/auth_controller.dart';
+import '../profile/birthday_prompt.dart';
 import '../providers.dart';
 
 class HistoryScreen extends ConsumerWidget {
@@ -109,16 +109,12 @@ class HistoryScreen extends ConsumerWidget {
                     locale: locale,
                     l10n: l10n,
                     onResume: _resumable(session.status)
-                        ? () async {
-                            final resumed = await ref
-                                .read(repositoryProvider)
-                                .resumeSession(session.id);
-                            if (!context.mounted) return;
-                            ref.invalidate(homeSnapshotProvider);
-                            ref.invalidate(programSnapshotProvider);
-                            ref.invalidate(historySnapshotProvider);
-                            context.push('/workout/${resumed.id}');
-                          }
+                        ? () => startProgramDay(
+                              context: context,
+                              ref: ref,
+                              dayId: session.programDayId,
+                              resumeSessionId: session.id,
+                            )
                         : null,
                   ),
                   const PlinthSpace(h: PlinthSize.sm),

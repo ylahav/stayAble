@@ -171,7 +171,19 @@ export interface User {
   defaultRestSeconds?: number | null;
   gender?: string | null;
   fitnessLevel?: ('beginner' | 'intermediate' | 'advanced') | null;
-  goals?: ('generalFitness' | 'strength' | 'mobility' | 'cardio' | 'weightManagement')[] | null;
+  goals?: ('generalFitness' | 'strength' | 'mobility' | 'cardio' | 'weightManagement' | 'bodyToning')[] | null;
+  /**
+   * Structured athlete profile from the StayAble app (health, goals, lifestyle).
+   */
+  assessment?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   language: 'en' | 'he';
   active?: boolean | null;
   updatedAt: string;
@@ -181,6 +193,7 @@ export interface User {
   resetPasswordExpiration?: string | null;
   salt?: string | null;
   hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
   loginAttempts?: number | null;
   lockUntil?: string | null;
   sessions?:
@@ -257,6 +270,10 @@ export interface Exercise {
    * Where this exercise can be performed
    */
   venue: 'home' | 'gym' | 'both';
+  /**
+   * Main training style: resistance, cardio endurance, intervals, or everyday movement.
+   */
+  workoutType: 'strength' | 'aerobic' | 'hiit' | 'functional';
   /**
    * Optional machine number in the gymnastics room
    */
@@ -617,6 +634,7 @@ export interface UsersSelect<T extends boolean = true> {
   gender?: T;
   fitnessLevel?: T;
   goals?: T;
+  assessment?: T;
   language?: T;
   active?: T;
   updatedAt?: T;
@@ -626,6 +644,7 @@ export interface UsersSelect<T extends boolean = true> {
   resetPasswordExpiration?: T;
   salt?: T;
   hash?: T;
+  resetPasswordRequestedAt?: T;
   loginAttempts?: T;
   lockUntil?: T;
   sessions?:
@@ -692,6 +711,7 @@ export interface ExercisesSelect<T extends boolean = true> {
   category?: T;
   difficulty?: T;
   venue?: T;
+  workoutType?: T;
   gymNumber?: T;
   duration?: T;
   repetitions?: T;

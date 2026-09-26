@@ -12,7 +12,24 @@ import '../../domain/domain.dart';
 import '../providers.dart';
 
 class ExercisesScreen extends ConsumerWidget {
-  const ExercisesScreen({super.key});
+  const ExercisesScreen({super.key, this.pickMode = false});
+
+  final bool pickMode;
+
+  static const _tagKeys = <String>[
+    'diff:beginner',
+    'diff:intermediate',
+    'diff:advanced',
+    'eq:mat',
+    'eq:resistanceBand',
+    'eq:dumbbells',
+    'eq:chair',
+    'eq:machine',
+    'eq:barbell',
+    'eq:cable',
+    'eq:kettlebell',
+    'eq:bench',
+  ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +39,14 @@ class ExercisesScreen extends ConsumerWidget {
     final async = ref.watch(filteredExercisesProvider);
 
     return StayAblePage(
-      title: l10n.exercisesLabel,
+      title: pickMode ? l10n.chooseExercise : l10n.exercisesLabel,
+      leading: pickMode
+          ? PlinthActionIcon(
+              semanticLabel: MaterialLocalizations.of(context).backButtonTooltip,
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.pop(),
+            )
+          : null,
       actions: const [LanguageToggle()],
       below: PlinthStack(
         gap: PlinthSize.sm,
@@ -32,6 +56,36 @@ class ExercisesScreen extends ConsumerWidget {
             leadingIcon: const Icon(Icons.search, size: 18),
             onChanged: (value) =>
                 ref.read(exerciseFilterProvider.notifier).setQuery(value),
+          ),
+          PlinthText(l10n.workoutTypeLabel, color: 'gray', size: PlinthSize.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: PlinthGroup(
+              children: [
+                PlinthChip(
+                  label: l10n.workoutTypeAll,
+                  selected: filter.workoutType == null,
+                  onSelected: (_) => ref
+                      .read(exerciseFilterProvider.notifier)
+                      .setWorkoutType(null),
+                ),
+                for (final type in WorkoutType.values)
+                  PlinthChip(
+                    label: workoutTypeLabel(l10n, type),
+                    selected: filter.workoutType == type,
+                    onSelected: (_) => ref
+                        .read(exerciseFilterProvider.notifier)
+                        .setWorkoutType(type),
+                  ),
+                PlinthChip(
+                  label: l10n.filterAtHome,
+                  selected: filter.homeCapable,
+                  onSelected: (_) => ref
+                      .read(exerciseFilterProvider.notifier)
+                      .setHomeCapable(!filter.homeCapable),
+                ),
+              ],
+            ),
           ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -50,6 +104,21 @@ class ExercisesScreen extends ConsumerWidget {
                     onSelected: (_) => ref
                         .read(exerciseFilterProvider.notifier)
                         .setCategory(category),
+                  ),
+              ],
+            ),
+          ),
+          PlinthText(l10n.chooseTags, color: 'gray', size: PlinthSize.sm),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: PlinthGroup(
+              children: [
+                for (final tag in _tagKeys)
+                  PlinthChip(
+                    label: exerciseTagLabel(l10n, tag),
+                    selected: filter.tags.contains(tag),
+                    onSelected: (_) =>
+                        ref.read(exerciseFilterProvider.notifier).toggleTag(tag),
                   ),
               ],
             ),
@@ -81,6 +150,8 @@ class ExercisesScreen extends ConsumerWidget {
               return PlinthArticleCard(
                 title: localizedName(exercise.name, locale),
                 excerpt: [
+                  workoutTypeLabel(l10n, exercise.workoutType),
+                  venueLabel(l10n, exercise.venue),
                   if (exercise.gymNumber != null)
                     l10n.gymStation(exercise.gymNumber!),
                   categoryLabel(l10n, exercise.category),
@@ -92,7 +163,13 @@ class ExercisesScreen extends ConsumerWidget {
                   category: exercise.category,
                   height: 96,
                 ),
-                onTap: () => context.push('/exercises/${exercise.id}'),
+                onTap: () {
+                  if (pickMode) {
+                    context.pop(exercise.id);
+                    return;
+                  }
+                  context.push('/exercises/${exercise.id}');
+                },
               );
             },
           );

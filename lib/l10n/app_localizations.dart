@@ -278,6 +278,48 @@ abstract class AppLocalizations {
   /// **'Cool-down'**
   String get categoryCoolDown;
 
+  /// No description provided for @workoutTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout type'**
+  String get workoutTypeLabel;
+
+  /// No description provided for @workoutTypeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All types'**
+  String get workoutTypeAll;
+
+  /// No description provided for @workoutTypeStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Strength'**
+  String get workoutTypeStrength;
+
+  /// No description provided for @workoutTypeAerobic.
+  ///
+  /// In en, this message translates to:
+  /// **'Aerobic'**
+  String get workoutTypeAerobic;
+
+  /// No description provided for @workoutTypeHiit.
+  ///
+  /// In en, this message translates to:
+  /// **'HIIT'**
+  String get workoutTypeHiit;
+
+  /// No description provided for @workoutTypeFunctional.
+  ///
+  /// In en, this message translates to:
+  /// **'Functional'**
+  String get workoutTypeFunctional;
+
+  /// No description provided for @filterAtHome.
+  ///
+  /// In en, this message translates to:
+  /// **'At home'**
+  String get filterAtHome;
+
   /// No description provided for @difficultyBeginner.
   ///
   /// In en, this message translates to:
@@ -860,6 +902,984 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get close;
 
+  /// No description provided for @setupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Private or with a trainer?'**
+  String get setupTitle;
+
+  /// No description provided for @setupLead.
+  ///
+  /// In en, this message translates to:
+  /// **'First choice: stay private on this device, or sign in as a user your trainer created on the server.'**
+  String get setupLead;
+
+  /// No description provided for @setupServerLead.
+  ///
+  /// In en, this message translates to:
+  /// **'You are a user on this StayAble site. Programs and results are stored there. You will not enter the address again at sign-in.'**
+  String get setupServerLead;
+
+  /// No description provided for @setupContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get setupContinue;
+
+  /// No description provided for @changeSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Change device setup'**
+  String get changeSetup;
+
+  /// No description provided for @changeSetupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose private or trainer again. You will be signed out.'**
+  String get changeSetupHint;
+
+  /// No description provided for @modeChooserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How do you want to train?'**
+  String get modeChooserTitle;
+
+  /// No description provided for @modeChooserLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Private on this device, or with a trainer on the server.'**
+  String get modeChooserLead;
+
+  /// No description provided for @modeTrainerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'With a trainer'**
+  String get modeTrainerTitle;
+
+  /// No description provided for @modeTrainerLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Network. Your trainer created you as a user on the StayAble server. Programs and results are stored there.'**
+  String get modeTrainerLead;
+
+  /// No description provided for @modeTrainerAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with trainer'**
+  String get modeTrainerAction;
+
+  /// No description provided for @modeLocalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get modeLocalTitle;
+
+  /// No description provided for @modeLocalLead.
+  ///
+  /// In en, this message translates to:
+  /// **'This device only. You are not a server user. You build your own program here.'**
+  String get modeLocalLead;
+
+  /// No description provided for @modeLocalAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue privately'**
+  String get modeLocalAction;
+
+  /// No description provided for @setupLocalLoginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a login on this device?'**
+  String get setupLocalLoginTitle;
+
+  /// No description provided for @setupLocalLoginLead.
+  ///
+  /// In en, this message translates to:
+  /// **'A login keeps each person\'s programs private when more than one person uses StayAble. Skip it if you want to stay anonymous.'**
+  String get setupLocalLoginLead;
+
+  /// No description provided for @setupLocalLoginYesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use login'**
+  String get setupLocalLoginYesTitle;
+
+  /// No description provided for @setupLocalLoginYesLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a user on this device, or sign in. Programs stay here and are not mixed.'**
+  String get setupLocalLoginYesLead;
+
+  /// No description provided for @setupLocalLoginYesAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Use login'**
+  String get setupLocalLoginYesAction;
+
+  /// No description provided for @setupLocalLoginNoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No login'**
+  String get setupLocalLoginNoTitle;
+
+  /// No description provided for @setupLocalLoginNoLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay private. No account. Everyone on this device shares the same programs.'**
+  String get setupLocalLoginNoLead;
+
+  /// No description provided for @setupLocalLoginNoAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue without login'**
+  String get setupLocalLoginNoAction;
+
+  /// No description provided for @loginLeadLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a user on this device, or sign in. Each person keeps their own programs here.'**
+  String get loginLeadLocal;
+
+  /// No description provided for @backToModes.
+  ///
+  /// In en, this message translates to:
+  /// **'Private or trainer'**
+  String get backToModes;
+
+  /// No description provided for @createProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Create program'**
+  String get createProgram;
+
+  /// No description provided for @createProgramHow.
+  ///
+  /// In en, this message translates to:
+  /// **'Build it yourself, or let StayAble use your athlete profile.'**
+  String get createProgramHow;
+
+  /// No description provided for @createProgramManualTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get createProgramManualTitle;
+
+  /// No description provided for @createProgramManualLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose days and exercises yourself.'**
+  String get createProgramManualLead;
+
+  /// No description provided for @createProgramManualAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Build it myself'**
+  String get createProgramManualAction;
+
+  /// No description provided for @createProgramWizardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'From profile'**
+  String get createProgramWizardTitle;
+
+  /// No description provided for @createProgramWizardLead.
+  ///
+  /// In en, this message translates to:
+  /// **'StayAble builds a program from your athlete profile. Update health, goals, and lifestyle there — not on each program.'**
+  String get createProgramWizardLead;
+
+  /// No description provided for @createProgramWizardAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Build from profile'**
+  String get createProgramWizardAction;
+
+  /// No description provided for @createProgramWizardOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'The wizard needs an internet connection to the StayAble server.'**
+  String get createProgramWizardOffline;
+
+  /// No description provided for @wizardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Athlete profile'**
+  String get wizardTitle;
+
+  /// No description provided for @wizardLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Age is only a starting point. Your athlete profile covers health, goals, fitness, lifestyle, and habits.'**
+  String get wizardLead;
+
+  /// No description provided for @wizardVenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Where will you train?'**
+  String get wizardVenue;
+
+  /// No description provided for @wizardType.
+  ///
+  /// In en, this message translates to:
+  /// **'What kind of program?'**
+  String get wizardType;
+
+  /// No description provided for @wizardAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get wizardAge;
+
+  /// No description provided for @wizardAgeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Age must be between 12 and 90.'**
+  String get wizardAgeRange;
+
+  /// No description provided for @birthday.
+  ///
+  /// In en, this message translates to:
+  /// **'Birthday'**
+  String get birthday;
+
+  /// No description provided for @birthdayLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your birthday once. StayAble uses it to size programs and workouts.'**
+  String get birthdayLead;
+
+  /// No description provided for @birthdayRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your birthday to continue.'**
+  String get birthdayRequired;
+
+  /// No description provided for @birthdaySave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save birthday'**
+  String get birthdaySave;
+
+  /// No description provided for @birthdayChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change birthday'**
+  String get birthdayChange;
+
+  /// No description provided for @birthdayUnset.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get birthdayUnset;
+
+  /// No description provided for @wizardStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Current fitness level'**
+  String get wizardStatus;
+
+  /// No description provided for @wizardGoals.
+  ///
+  /// In en, this message translates to:
+  /// **'Goals'**
+  String get wizardGoals;
+
+  /// No description provided for @wizardGoalsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one goal.'**
+  String get wizardGoalsRequired;
+
+  /// No description provided for @wizardPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get wizardPeriod;
+
+  /// No description provided for @wizardPeriodWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get wizardPeriodWeekly;
+
+  /// No description provided for @wizardPeriodWeeklyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the days that repeat every week.'**
+  String get wizardPeriodWeeklyHint;
+
+  /// No description provided for @wizardDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Training days'**
+  String get wizardDays;
+
+  /// No description provided for @wizardPeriodDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Day by day'**
+  String get wizardPeriodDaily;
+
+  /// No description provided for @wizardPeriodDailyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A session for every day.'**
+  String get wizardPeriodDailyHint;
+
+  /// No description provided for @wizardPeriodOccasional.
+  ///
+  /// In en, this message translates to:
+  /// **'Occasional'**
+  String get wizardPeriodOccasional;
+
+  /// No description provided for @wizardPeriodOccasionalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Available anytime. You choose when to start it.'**
+  String get wizardPeriodOccasionalHint;
+
+  /// No description provided for @scheduleAnytime.
+  ///
+  /// In en, this message translates to:
+  /// **'Anytime'**
+  String get scheduleAnytime;
+
+  /// No description provided for @wizardGenerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create program'**
+  String get wizardGenerate;
+
+  /// No description provided for @wizardFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create a program. Check the connection and try again.'**
+  String get wizardFailed;
+
+  /// No description provided for @wizardEmptyCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough matching exercises to build this program.'**
+  String get wizardEmptyCatalog;
+
+  /// No description provided for @goalGeneralFitness.
+  ///
+  /// In en, this message translates to:
+  /// **'General fitness'**
+  String get goalGeneralFitness;
+
+  /// No description provided for @goalStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Get stronger'**
+  String get goalStrength;
+
+  /// No description provided for @goalMobility.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobility'**
+  String get goalMobility;
+
+  /// No description provided for @goalCardio.
+  ///
+  /// In en, this message translates to:
+  /// **'Cardio'**
+  String get goalCardio;
+
+  /// No description provided for @goalWeightManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight management'**
+  String get goalWeightManagement;
+
+  /// No description provided for @goalBodyToning.
+  ///
+  /// In en, this message translates to:
+  /// **'Body toning'**
+  String get goalBodyToning;
+
+  /// No description provided for @wizardNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get wizardNext;
+
+  /// No description provided for @wizardBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get wizardBack;
+
+  /// No description provided for @wizardStepOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Step {current} of {total}'**
+  String wizardStepOf(int current, int total);
+
+  /// No description provided for @wizardHealthTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Health and medical history'**
+  String get wizardHealthTitle;
+
+  /// No description provided for @wizardHealthLead.
+  ///
+  /// In en, this message translates to:
+  /// **'This is the most important step. StayAble uses it to keep the program safer. It is not a medical diagnosis.'**
+  String get wizardHealthLead;
+
+  /// No description provided for @wizardHealthInjuries.
+  ///
+  /// In en, this message translates to:
+  /// **'Injuries or chronic pain'**
+  String get wizardHealthInjuries;
+
+  /// No description provided for @wizardHealthConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical conditions'**
+  String get wizardHealthConditions;
+
+  /// No description provided for @wizardHealthMeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Medications that affect heart rate, blood pressure, balance, or energy'**
+  String get wizardHealthMeds;
+
+  /// No description provided for @wizardHealthClearance.
+  ///
+  /// In en, this message translates to:
+  /// **'A doctor should clear me before I train'**
+  String get wizardHealthClearance;
+
+  /// No description provided for @wizardHealthNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None of these'**
+  String get wizardHealthNone;
+
+  /// No description provided for @assessInjuryKnees.
+  ///
+  /// In en, this message translates to:
+  /// **'Knees'**
+  String get assessInjuryKnees;
+
+  /// No description provided for @assessInjuryBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get assessInjuryBack;
+
+  /// No description provided for @assessInjuryShoulders.
+  ///
+  /// In en, this message translates to:
+  /// **'Shoulders'**
+  String get assessInjuryShoulders;
+
+  /// No description provided for @assessInjuryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get assessInjuryOther;
+
+  /// No description provided for @assessConditionHeart.
+  ///
+  /// In en, this message translates to:
+  /// **'Heart disease'**
+  String get assessConditionHeart;
+
+  /// No description provided for @assessConditionBp.
+  ///
+  /// In en, this message translates to:
+  /// **'High blood pressure'**
+  String get assessConditionBp;
+
+  /// No description provided for @assessConditionAsthma.
+  ///
+  /// In en, this message translates to:
+  /// **'Asthma'**
+  String get assessConditionAsthma;
+
+  /// No description provided for @assessConditionDiabetes.
+  ///
+  /// In en, this message translates to:
+  /// **'Diabetes'**
+  String get assessConditionDiabetes;
+
+  /// No description provided for @assessConditionJoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Joint disorders'**
+  String get assessConditionJoints;
+
+  /// No description provided for @wizardGoalsLead.
+  ///
+  /// In en, this message translates to:
+  /// **'What should this program work toward, and how fast?'**
+  String get wizardGoalsLead;
+
+  /// No description provided for @wizardTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'When do you hope to see results?'**
+  String get wizardTimeline;
+
+  /// No description provided for @assessTimelineSlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow and steady'**
+  String get assessTimelineSlow;
+
+  /// No description provided for @assessTimelineModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'A few months'**
+  String get assessTimelineModerate;
+
+  /// No description provided for @assessTimelineFast.
+  ///
+  /// In en, this message translates to:
+  /// **'As soon as possible'**
+  String get assessTimelineFast;
+
+  /// No description provided for @wizardPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'How do you prefer to train?'**
+  String get wizardPreferences;
+
+  /// No description provided for @assessPrefFreeWeights.
+  ///
+  /// In en, this message translates to:
+  /// **'Free weights'**
+  String get assessPrefFreeWeights;
+
+  /// No description provided for @assessPrefMachines.
+  ///
+  /// In en, this message translates to:
+  /// **'Machines'**
+  String get assessPrefMachines;
+
+  /// No description provided for @assessPrefFunctional.
+  ///
+  /// In en, this message translates to:
+  /// **'Functional training'**
+  String get assessPrefFunctional;
+
+  /// No description provided for @assessPrefMixed.
+  ///
+  /// In en, this message translates to:
+  /// **'A mix'**
+  String get assessPrefMixed;
+
+  /// No description provided for @wizardFitnessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Current fitness and experience'**
+  String get wizardFitnessTitle;
+
+  /// No description provided for @wizardFitnessLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting point, work life, and how you move.'**
+  String get wizardFitnessLead;
+
+  /// No description provided for @wizardBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you starting from scratch or returning to fitness?'**
+  String get wizardBackground;
+
+  /// No description provided for @assessBackgroundStarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting from scratch'**
+  String get assessBackgroundStarting;
+
+  /// No description provided for @assessBackgroundReturning.
+  ///
+  /// In en, this message translates to:
+  /// **'Returning to fitness'**
+  String get assessBackgroundReturning;
+
+  /// No description provided for @assessBackgroundCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Already training'**
+  String get assessBackgroundCurrent;
+
+  /// No description provided for @wizardOccupation.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily occupation'**
+  String get wizardOccupation;
+
+  /// No description provided for @assessOccupationSedentary.
+  ///
+  /// In en, this message translates to:
+  /// **'Mostly sitting'**
+  String get assessOccupationSedentary;
+
+  /// No description provided for @assessOccupationMixed.
+  ///
+  /// In en, this message translates to:
+  /// **'A mix of sitting and moving'**
+  String get assessOccupationMixed;
+
+  /// No description provided for @assessOccupationPhysical.
+  ///
+  /// In en, this message translates to:
+  /// **'Physically demanding'**
+  String get assessOccupationPhysical;
+
+  /// No description provided for @wizardMobility.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobility, flexibility, and core stability'**
+  String get wizardMobility;
+
+  /// No description provided for @assessMobilityLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited'**
+  String get assessMobilityLimited;
+
+  /// No description provided for @assessMobilityAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Average'**
+  String get assessMobilityAverage;
+
+  /// No description provided for @assessMobilityGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get assessMobilityGood;
+
+  /// No description provided for @wizardLifestyleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability and lifestyle'**
+  String get wizardLifestyleTitle;
+
+  /// No description provided for @wizardLifestyleLead.
+  ///
+  /// In en, this message translates to:
+  /// **'How many days, how long, and how you recover.'**
+  String get wizardLifestyleLead;
+
+  /// No description provided for @wizardSessionMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes per session'**
+  String get wizardSessionMinutes;
+
+  /// No description provided for @wizardSleepHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours of sleep'**
+  String get wizardSleepHours;
+
+  /// No description provided for @wizardStress.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily stress'**
+  String get wizardStress;
+
+  /// No description provided for @assessStressLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get assessStressLow;
+
+  /// No description provided for @assessStressModerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Moderate'**
+  String get assessStressModerate;
+
+  /// No description provided for @assessStressHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get assessStressHigh;
+
+  /// No description provided for @wizardNutritionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nutrition and habits'**
+  String get wizardNutritionTitle;
+
+  /// No description provided for @wizardNutritionLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Food and lifestyle habits that affect stamina and recovery.'**
+  String get wizardNutritionLead;
+
+  /// No description provided for @wizardDiet.
+  ///
+  /// In en, this message translates to:
+  /// **'Eating pattern'**
+  String get wizardDiet;
+
+  /// No description provided for @assessDietRegular.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular meals'**
+  String get assessDietRegular;
+
+  /// No description provided for @assessDietPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'A specific meal plan'**
+  String get assessDietPlan;
+
+  /// No description provided for @assessDietSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'I often skip meals'**
+  String get assessDietSkip;
+
+  /// No description provided for @wizardHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'Smoking or alcohol'**
+  String get wizardHabits;
+
+  /// No description provided for @assessHabitNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Neither'**
+  String get assessHabitNone;
+
+  /// No description provided for @assessHabitSmoking.
+  ///
+  /// In en, this message translates to:
+  /// **'Smoking'**
+  String get assessHabitSmoking;
+
+  /// No description provided for @assessHabitAlcohol.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcohol'**
+  String get assessHabitAlcohol;
+
+  /// No description provided for @assessHabitBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'Both'**
+  String get assessHabitBoth;
+
+  /// No description provided for @wizardProgramTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Program shape'**
+  String get wizardProgramTitle;
+
+  /// No description provided for @wizardProgramLead.
+  ///
+  /// In en, this message translates to:
+  /// **'Last choices: where you train and what kind of sessions to build.'**
+  String get wizardProgramLead;
+
+  /// No description provided for @wizardSaveAssessment.
+  ///
+  /// In en, this message translates to:
+  /// **'Save assessment'**
+  String get wizardSaveAssessment;
+
+  /// No description provided for @wizardAssessmentSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Assessment saved'**
+  String get wizardAssessmentSaved;
+
+  /// No description provided for @assessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Athlete profile'**
+  String get assessTitle;
+
+  /// No description provided for @assessChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit athlete profile'**
+  String get assessChange;
+
+  /// No description provided for @assessUnset.
+  ///
+  /// In en, this message translates to:
+  /// **'Not completed yet'**
+  String get assessUnset;
+
+  /// No description provided for @editProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editProgram;
+
+  /// No description provided for @deleteProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteProgram;
+
+  /// No description provided for @deleteProgramConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this program? Past workouts stay in History.'**
+  String get deleteProgramConfirm;
+
+  /// No description provided for @programName.
+  ///
+  /// In en, this message translates to:
+  /// **'Program name'**
+  String get programName;
+
+  /// No description provided for @programNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a program name'**
+  String get programNameRequired;
+
+  /// No description provided for @saveProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Save program'**
+  String get saveProgram;
+
+  /// No description provided for @programSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Program saved'**
+  String get programSaved;
+
+  /// No description provided for @addExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Add exercise'**
+  String get addExercise;
+
+  /// No description provided for @selectDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one weekday'**
+  String get selectDays;
+
+  /// No description provided for @programNeedsExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one exercise'**
+  String get programNeedsExercise;
+
+  /// No description provided for @timedExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Timed'**
+  String get timedExercise;
+
+  /// No description provided for @repsExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Reps'**
+  String get repsExercise;
+
+  /// No description provided for @removeExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get removeExercise;
+
+  /// No description provided for @reorderExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to reorder'**
+  String get reorderExercise;
+
+  /// No description provided for @catalogRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh exercise catalog'**
+  String get catalogRefresh;
+
+  /// No description provided for @catalogRefreshed.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalog updated'**
+  String get catalogRefreshed;
+
+  /// No description provided for @catalogRefreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not refresh the catalog. Check the server address.'**
+  String get catalogRefreshFailed;
+
+  /// No description provided for @serverUrlHintLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'HTTPS address of the StayAble site. The public exercise list is downloaded from there.'**
+  String get serverUrlHintLocal;
+
+  /// No description provided for @catalogWeeklyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'StayAble checks the default server about once a week for new exercises. You can also refresh the list here.'**
+  String get catalogWeeklyHint;
+
+  /// No description provided for @catalogUpdateBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'New exercises'**
+  String get catalogUpdateBadge;
+
+  /// No description provided for @catalogUpdateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{A new exercise is available.} other{{count} new exercises are available.}}'**
+  String catalogUpdateAvailable(int count);
+
+  /// No description provided for @catalogUpdateChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated exercises are available.'**
+  String get catalogUpdateChanged;
+
+  /// No description provided for @catalogSyncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync exercises'**
+  String get catalogSyncNow;
+
+  /// No description provided for @catalogUpdateLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get catalogUpdateLater;
+
+  /// No description provided for @appModeLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Private'**
+  String get appModeLocal;
+
+  /// No description provided for @appModeCloud.
+  ///
+  /// In en, this message translates to:
+  /// **'With a trainer'**
+  String get appModeCloud;
+
+  /// No description provided for @noProgramLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'No program yet. Create one from the exercise catalog.'**
+  String get noProgramLocal;
+
+  /// No description provided for @chooseTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by tags'**
+  String get chooseTags;
+
   /// No description provided for @loginTitle.
   ///
   /// In en, this message translates to:
@@ -871,6 +1891,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Athletes only. Use the same email and password as the StayAble website.'**
   String get loginLead;
+
+  /// No description provided for @loginCreateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create user'**
+  String get loginCreateTitle;
+
+  /// No description provided for @loginCreateLead.
+  ///
+  /// In en, this message translates to:
+  /// **'This user stays on this device. It is not a trainer account on the server.'**
+  String get loginCreateLead;
+
+  /// No description provided for @loginCreateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Create user'**
+  String get loginCreateAction;
+
+  /// No description provided for @loginName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get loginName;
+
+  /// No description provided for @loginNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a name'**
+  String get loginNameRequired;
 
   /// No description provided for @loginEmail.
   ///
@@ -896,11 +1946,23 @@ abstract class AppLocalizations {
   /// **'Enter your password'**
   String get loginPasswordRequired;
 
+  /// No description provided for @loginPasswordShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Use at least 6 characters.'**
+  String get loginPasswordShort;
+
   /// No description provided for @loginAction.
   ///
   /// In en, this message translates to:
   /// **'Log in'**
   String get loginAction;
+
+  /// No description provided for @loginErrorEmailTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'This email already has a user on this device.'**
+  String get loginErrorEmailTaken;
 
   /// No description provided for @loginSubmitting.
   ///
