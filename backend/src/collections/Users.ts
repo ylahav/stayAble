@@ -197,15 +197,22 @@ export const Users: CollectionConfig = {
       },
     ],
     beforeChange: [
-      ({ data, operation, req }) => {
+      ({ data, operation, originalDoc, req }) => {
         const actor = req.user as AuthedUser | undefined
+        const existing = originalDoc as { language?: unknown; roles?: unknown } | undefined
         if (actor && !isAdmin(actor)) {
           delete data.active
           if (operation === 'create') {
             data.roles = ['athlete']
+          } else if (Array.isArray(existing?.roles) && existing.roles.length > 0) {
+            data.roles = existing.roles
           } else {
-            delete data.roles
+            data.roles = ['athlete']
           }
+        }
+        if (!data.language) {
+          data.language =
+            typeof existing?.language === 'string' && existing.language ? existing.language : 'en'
         }
         if (data.level) {
           data.fitnessLevel =
@@ -213,7 +220,7 @@ export const Users: CollectionConfig = {
         } else if (data.fitnessLevel && !data.level) {
           data.level = data.fitnessLevel
         }
-        if (data.sex && !data.gender) {
+        if (typeof data.sex === 'string' && data.sex && !data.gender) {
           data.gender = data.sex
         }
         return data

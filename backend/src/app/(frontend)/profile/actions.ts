@@ -62,16 +62,46 @@ export async function updateProfile(formData: FormData): Promise<{ error?: strin
   }
 
   const payload = await getPayloadClient()
-  await payload.update({
-    collection: 'users',
-    id: user.id,
-    user,
-    overrideAccess: false,
-    data: { name, age, weightKg, sex, level, conditionNotes, trainingVenue, preferredUnits },
-  })
+  try {
+    await payload.update({
+      collection: 'users',
+      id: user.id,
+      user,
+      overrideAccess: false,
+      data: {
+        name,
+        conditionNotes,
+        ...(age != null ? { age } : {}),
+        ...(weightKg != null ? { weightKg } : {}),
+        ...(sex ? { sex, gender: sex } : {}),
+        ...(level ? { level } : {}),
+        ...(trainingVenue ? { trainingVenue } : {}),
+        ...(preferredUnits ? { preferredUnits } : {}),
+      },
+    })
+  } catch (error) {
+    return { error: profileSaveError(error) }
+  }
 
   revalidatePath('/profile')
   return {}
+}
+
+function profileSaveError(error: unknown): string {
+  if (error && typeof error === 'object') {
+    const payload = error as {
+      data?: { errors?: { message?: string }[] }
+      message?: string
+    }
+    const fields = payload.data?.errors
+      ?.map((item) => item.message)
+      .filter((item): item is string => Boolean(item))
+    if (fields?.length) return fields.join(' ')
+    if (typeof payload.message === 'string' && payload.message.trim()) {
+      return payload.message
+    }
+  }
+  return 'Could not save your profile.'
 }
 
 export async function changePassword(formData: FormData): Promise<{ error?: string }> {
