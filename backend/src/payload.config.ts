@@ -8,6 +8,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { isAdmin, type AuthedUser } from './access/roles'
+import { BodyMeasurements } from './collections/BodyMeasurements'
 import { Exercises } from './collections/Exercises'
 import { Media } from './collections/Media'
 import { ProgramAssignments } from './collections/ProgramAssignments'
@@ -19,6 +20,7 @@ import { seedExerciseCatalog } from './seed/exercises'
 import { seedDefaultProgram } from './seed/program'
 import { seedCompletedSession } from './seed/sessions'
 import { publicCatalogRootEndpoints } from './lib/catalogEndpoints'
+import { migrateLegacyUserRoles } from './lib/migrateRoles'
 import { configuredOrigins, publicServerURL } from './lib/publicOrigin'
 
 const filename = fileURLToPath(import.meta.url)
@@ -64,6 +66,7 @@ export default buildConfig({
     ProgramAssignments,
     TrainerClients,
     WorkoutSessions,
+    BodyMeasurements,
   ],
   cors,
   csrf: cors,
@@ -81,6 +84,12 @@ export default buildConfig({
     }),
   ],
   onInit: async (payload) => {
+    try {
+      await migrateLegacyUserRoles(payload)
+    } catch (err) {
+      payload.logger.error({ err }, 'Role migration failed')
+    }
+
     const email = process.env.PAYLOAD_ADMIN_EMAIL
     const password = process.env.PAYLOAD_ADMIN_PASSWORD
     const emailLooksValid = Boolean(email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -108,7 +117,7 @@ export default buildConfig({
             level: 'beginner',
             name: 'Admin',
             password,
-            roles: ['admin', 'trainer', 'athlete'],
+            roles: ['admin', 'instructor', 'trainee'],
           },
         })
         payload.logger.info(`Created initial admin user ${email}`)

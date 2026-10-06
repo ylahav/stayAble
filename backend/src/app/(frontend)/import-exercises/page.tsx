@@ -21,7 +21,7 @@ export default async function ImportExercisesPage() {
             <h1 className="page-title">Import exercises</h1>
             <p className="page-lead">
               Paste or drop the JSON from Gemini, Claude, GPT, or Copilot. Everything is saved{' '}
-              <strong>inactive</strong> so you can check cues and Hebrew before athletes see it.
+              <strong>inactive</strong> so you can check cues and Hebrew before trainees see it.
             </p>
           </div>
           <Link className="btn btn-ghost" href="/exercises">

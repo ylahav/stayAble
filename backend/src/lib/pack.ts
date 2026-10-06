@@ -4,6 +4,7 @@ import path from 'path'
 
 import type { Payload, Where } from 'payload'
 
+import { canonicalizeRoles } from '@/access/roles'
 import { localizedToHtml } from '@/lib/richText'
 
 export const PACK_VERSION = 1 as const
@@ -247,7 +248,7 @@ export async function exportStayAblePack(payload: Payload): Promise<StayAblePack
     users: users.map((row) => ({
       email: row.email,
       name: row.name,
-      roles: row.roles,
+      roles: canonicalizeRoles(row.roles),
       photo: row.photo,
       birthDate: row.birthDate,
       age: row.age,
@@ -460,7 +461,7 @@ export async function importStayAblePack(
     const data = {
       name: String(row.name ?? email),
       email,
-      roles: (row.roles as string[]) ?? ['athlete'],
+      roles: canonicalizeRoles(row.roles).length > 0 ? canonicalizeRoles(row.roles) : ['trainee'],
       photo: row.photo,
       birthDate: row.birthDate,
       age: row.age,

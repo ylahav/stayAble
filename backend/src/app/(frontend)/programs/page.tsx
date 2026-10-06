@@ -15,7 +15,7 @@ import {
 import { AcceptInvites } from './AcceptInvites'
 
 export default async function ProgramsPage() {
-  const user = await requireRoles(['athlete'])
+  const user = await requireRoles(['trainee'])
   const payload = await getPayloadClient()
 
   const [assignments, sessions, invites] = await Promise.all([

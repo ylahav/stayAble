@@ -16,7 +16,7 @@ export const TrainerClients: CollectionConfig = {
     useAsTitle: 'adminTitle',
   },
   access: {
-    create: ({ req: { user } }) => hasRole(user as AuthedUser, 'trainer') || isAdmin(user as AuthedUser),
+    create: ({ req: { user } }) => hasRole(user as AuthedUser, 'instructor') || isAdmin(user as AuthedUser),
     delete: ({ req: { user } }) => isAdmin(user as AuthedUser),
     read: ({ req: { user } }) => {
       if (!user) return false
@@ -33,8 +33,8 @@ export const TrainerClients: CollectionConfig = {
     clientIdField,
     adminTitleField,
     deletedField,
-    { name: 'trainer', type: 'relationship', relationTo: 'users', required: true },
-    { name: 'athlete', type: 'relationship', relationTo: 'users', required: true },
+    { name: 'trainer', type: 'relationship', relationTo: 'users', required: true, label: 'Instructor' },
+    { name: 'athlete', type: 'relationship', relationTo: 'users', required: true, label: 'Trainee' },
     {
       name: 'status',
       type: 'select',
@@ -86,7 +86,7 @@ export const TrainerClients: CollectionConfig = {
           ) {
             data.endedAt = data.endedAt ?? new Date().toISOString()
           }
-          if (athleteId === user.id && !hasRole(user, 'trainer')) {
+          if (athleteId === user.id && !hasRole(user, 'instructor')) {
             data.trainer = trainerId
             data.athlete = athleteId
           }

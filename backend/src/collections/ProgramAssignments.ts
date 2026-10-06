@@ -11,7 +11,7 @@ export const ProgramAssignments: CollectionConfig = {
   admin: {
     defaultColumns: ['athlete', 'program', 'scheduleType', 'active', 'startDate', 'updatedAt'],
     description:
-      'Gives an athlete a program. Set when they train here (weekly, daily, or custom). Leave refinements empty to use the program defaults, or override sets, reps, duration, and load for this person only.',
+      'Gives a trainee a program. Set when they train here (weekly, daily, or custom). Leave refinements empty to use the program defaults, or override sets, reps, duration, and load for this person only.',
     useAsTitle: 'adminTitle',
   },
   access: {
@@ -21,7 +21,7 @@ export const ProgramAssignments: CollectionConfig = {
       const user = req.user as AuthedUser | null
       if (!user) return false
       if (isAdmin(user)) return true
-      if (hasRole(user, 'trainer')) {
+      if (hasRole(user, 'instructor')) {
         const ids = await athleteIdsForTrainer(req.payload, user.id)
         return selfOrIn('athlete', user.id, ids)
       }
@@ -31,7 +31,7 @@ export const ProgramAssignments: CollectionConfig = {
       const user = req.user as AuthedUser | null
       if (!user) return false
       if (isAdmin(user)) return true
-      if (hasRole(user, 'trainer')) {
+      if (hasRole(user, 'instructor')) {
         const ids = await athleteIdsForTrainer(req.payload, user.id)
         return athleteIn(ids)
       }
@@ -47,9 +47,9 @@ export const ProgramAssignments: CollectionConfig = {
       type: 'relationship',
       relationTo: 'programs',
       required: true,
-      admin: { description: 'The exercise collection this athlete will follow.' },
+      admin: { description: 'The exercise collection this trainee will follow.' },
     },
-    { name: 'athlete', type: 'relationship', relationTo: 'users', required: true },
+    { name: 'athlete', type: 'relationship', relationTo: 'users', required: true, label: 'Trainee' },
     { name: 'assignedBy', type: 'relationship', relationTo: 'users', required: true },
     {
       name: 'scheduleType',
@@ -61,7 +61,7 @@ export const ProgramAssignments: CollectionConfig = {
         { label: 'Custom', value: 'custom' },
       ],
       required: true,
-      admin: { description: 'When this athlete trains. Specific to this person, not the program.' },
+      admin: { description: 'When this trainee trains. Specific to this person, not the program.' },
     },
     { name: 'startDate', type: 'date' },
     { name: 'endDate', type: 'date' },
@@ -71,7 +71,7 @@ export const ProgramAssignments: CollectionConfig = {
       type: 'array',
       admin: {
         description:
-          'Which days this athlete trains. Weekly uses weekday (1 = Monday). Custom uses a date. Daily can list every weekday or be left empty.',
+          'Which days this trainee trains. Weekly uses weekday (1 = Monday). Custom uses a date. Daily can list every weekday or be left empty.',
       },
       fields: [
         nestedClientIdField,
@@ -84,7 +84,7 @@ export const ProgramAssignments: CollectionConfig = {
       type: 'array',
       admin: {
         description:
-          'Optional per-exercise overrides for this athlete. Match programExerciseClientId to the slug of a slot on the program. Leave a field empty to keep the program default.',
+          'Optional per-exercise overrides for this trainee. Match programExerciseClientId to the slug of a slot on the program. Leave a field empty to keep the program default.',
       },
       fields: [
         {

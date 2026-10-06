@@ -9,7 +9,7 @@ import { parseScheduleType, scheduleDaysFor } from '@/lib/schedule'
 
 export async function inviteAthlete(formData: FormData): Promise<{ error?: string }> {
   const user = await getCurrentUser()
-  if (!user || !hasRole(user, 'trainer')) return { error: 'Trainer role required.' }
+  if (!user || !hasRole(user, 'instructor')) return { error: 'Instructor role required.' }
 
   const email = String(formData.get('email') ?? '')
     .trim()
@@ -59,7 +59,7 @@ export async function inviteAthlete(formData: FormData): Promise<{ error?: strin
 
 export async function assignProgram(formData: FormData): Promise<{ error?: string }> {
   const user = await getCurrentUser()
-  if (!user || !hasRole(user, 'trainer')) return { error: 'Trainer role required.' }
+  if (!user || !hasRole(user, 'instructor')) return { error: 'Instructor role required.' }
 
   const athleteId = String(formData.get('athleteId') ?? '')
   const programId = String(formData.get('programId') ?? '')
@@ -69,7 +69,7 @@ export async function assignProgram(formData: FormData): Promise<{ error?: strin
     .getAll('weekday')
     .map((value) => Number(value))
     .filter((value) => Number.isInteger(value) && value >= 1 && value <= 7)
-  if (!athleteId || !programId) return { error: 'Choose a client and a program.' }
+  if (!athleteId || !programId) return { error: 'Choose a trainee and a program.' }
 
   const payload = await getPayloadClient()
   const links = await payload.find({
@@ -86,7 +86,7 @@ export async function assignProgram(formData: FormData): Promise<{ error?: strin
       ],
     },
   })
-  if (links.totalDocs === 0) return { error: 'Client must accept the invite first.' }
+  if (links.totalDocs === 0) return { error: 'Trainee must accept the invite first.' }
 
   const foundPrograms = await payload.find({
     collection: 'programs',

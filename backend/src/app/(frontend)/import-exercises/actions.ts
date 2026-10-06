@@ -16,7 +16,7 @@ export type ImportExercisesResult = {
 export async function importExercises(raw: string): Promise<ImportExercisesResult> {
   const user = await getCurrentUser()
   if (!user || !isStaff(user)) {
-    return { error: 'Trainer or admin role required.', imported: [], skipped: [] }
+    return { error: 'Instructor or admin role required.', imported: [], skipped: [] }
   }
 
   const parsed = parseExerciseJson(raw)

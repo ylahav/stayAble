@@ -30,7 +30,7 @@ export function AssignForm({
   if (athletes.length === 0 || programs.length === 0) {
     return (
       <p className="muted">
-        You need an accepted client and a program you own before you can assign.
+        You need an accepted trainee and a program you own before you can assign.
       </p>
     )
   }
@@ -46,12 +46,12 @@ export function AssignForm({
       }}
     >
       <p className="muted" style={{ margin: 0 }}>
-        A program is a reusable list of exercises. Assigning it sets when this client trains. Home
+        A program is a reusable list of exercises. Assigning it sets when this trainee trains. Home
         and gym programs can both stay assigned. Refine sets, reps, duration, or load on the
         assignment in Admin.
       </p>
       <label>
-        Client
+        Trainee
         <select name="athleteId" required defaultValue={athletes[0].id}>
           {athletes.map((row) => (
             <option key={row.id} value={row.id}>
@@ -117,7 +117,7 @@ export function AssignForm({
       {error && <p className="error">{error}</p>}
       {ok && (
         <p className="muted">
-          Assignment updated. Other programs for this athlete stay active. An in-progress workout
+          Assignment updated. Other programs for this trainee stay active. An in-progress workout
           is left as-is.
         </p>
       )}

@@ -6,7 +6,16 @@ import { LogoutButton } from './LogoutButton'
 
 type Props = {
   user: AuthedUser | null
-  current?: 'home' | 'login' | 'dashboard' | 'programs' | 'profile' | 'import' | 'exercises' | 'backup'
+  current?:
+    | 'home'
+    | 'login'
+    | 'dashboard'
+    | 'programs'
+    | 'profile'
+    | 'import'
+    | 'import-body'
+    | 'exercises'
+    | 'backup'
 }
 
 export function SiteHeader({ user, current }: Props) {
@@ -28,7 +37,7 @@ export function SiteHeader({ user, current }: Props) {
               Dashboard
             </Link>
           )}
-          {user && hasRole(user, 'athlete') && (
+          {user && hasRole(user, 'trainee') && (
             <Link href="/programs" aria-current={current === 'programs' ? 'page' : undefined}>
               Programs
             </Link>

@@ -905,13 +905,13 @@ abstract class AppLocalizations {
   /// No description provided for @setupTitle.
   ///
   /// In en, this message translates to:
-  /// **'Private or with a trainer?'**
+  /// **'Private or with an instructor?'**
   String get setupTitle;
 
   /// No description provided for @setupLead.
   ///
   /// In en, this message translates to:
-  /// **'First choice: stay private on this device, or sign in as a user your trainer created on the server.'**
+  /// **'First choice: stay private on this device, or sign in as a user your instructor created on the server.'**
   String get setupLead;
 
   /// No description provided for @setupServerLead.
@@ -935,7 +935,7 @@ abstract class AppLocalizations {
   /// No description provided for @changeSetupHint.
   ///
   /// In en, this message translates to:
-  /// **'Choose private or trainer again. You will be signed out.'**
+  /// **'Choose private or instructor again. You will be signed out.'**
   String get changeSetupHint;
 
   /// No description provided for @modeChooserTitle.
@@ -947,25 +947,25 @@ abstract class AppLocalizations {
   /// No description provided for @modeChooserLead.
   ///
   /// In en, this message translates to:
-  /// **'Private on this device, or with a trainer on the server.'**
+  /// **'Private on this device, or with an instructor on the server.'**
   String get modeChooserLead;
 
   /// No description provided for @modeTrainerTitle.
   ///
   /// In en, this message translates to:
-  /// **'With a trainer'**
+  /// **'With an instructor'**
   String get modeTrainerTitle;
 
   /// No description provided for @modeTrainerLead.
   ///
   /// In en, this message translates to:
-  /// **'Network. Your trainer created you as a user on the StayAble server. Programs and results are stored there.'**
+  /// **'Network. Your instructor created you as a user on the StayAble server. Programs and results are stored there.'**
   String get modeTrainerLead;
 
   /// No description provided for @modeTrainerAction.
   ///
   /// In en, this message translates to:
-  /// **'Continue with trainer'**
+  /// **'Continue with instructor'**
   String get modeTrainerAction;
 
   /// No description provided for @modeLocalTitle.
@@ -1043,7 +1043,7 @@ abstract class AppLocalizations {
   /// No description provided for @backToModes.
   ///
   /// In en, this message translates to:
-  /// **'Private or trainer'**
+  /// **'Private or instructor'**
   String get backToModes;
 
   /// No description provided for @createProgram.
@@ -1055,7 +1055,7 @@ abstract class AppLocalizations {
   /// No description provided for @createProgramHow.
   ///
   /// In en, this message translates to:
-  /// **'Build it yourself, or let StayAble use your athlete profile.'**
+  /// **'Build it yourself, or let StayAble use your trainee profile.'**
   String get createProgramHow;
 
   /// No description provided for @createProgramManualTitle.
@@ -1085,7 +1085,7 @@ abstract class AppLocalizations {
   /// No description provided for @createProgramWizardLead.
   ///
   /// In en, this message translates to:
-  /// **'StayAble builds a program from your athlete profile. Update health, goals, and lifestyle there — not on each program.'**
+  /// **'StayAble builds a program from your trainee profile. Update health, goals, and lifestyle there — not on each program.'**
   String get createProgramWizardLead;
 
   /// No description provided for @createProgramWizardAction.
@@ -1103,13 +1103,13 @@ abstract class AppLocalizations {
   /// No description provided for @wizardTitle.
   ///
   /// In en, this message translates to:
-  /// **'Athlete profile'**
+  /// **'Trainee profile'**
   String get wizardTitle;
 
   /// No description provided for @wizardLead.
   ///
   /// In en, this message translates to:
-  /// **'Age is only a starting point. Your athlete profile covers health, goals, fitness, lifestyle, and habits.'**
+  /// **'Age is only a starting point. Your trainee profile covers health, goals, fitness, lifestyle, and habits.'**
   String get wizardLead;
 
   /// No description provided for @wizardVenue.
@@ -1697,13 +1697,13 @@ abstract class AppLocalizations {
   /// No description provided for @assessTitle.
   ///
   /// In en, this message translates to:
-  /// **'Athlete profile'**
+  /// **'Trainee profile'**
   String get assessTitle;
 
   /// No description provided for @assessChange.
   ///
   /// In en, this message translates to:
-  /// **'Edit athlete profile'**
+  /// **'Edit trainee profile'**
   String get assessChange;
 
   /// No description provided for @assessUnset.
@@ -1865,7 +1865,7 @@ abstract class AppLocalizations {
   /// No description provided for @appModeCloud.
   ///
   /// In en, this message translates to:
-  /// **'With a trainer'**
+  /// **'With an instructor'**
   String get appModeCloud;
 
   /// No description provided for @noProgramLocal.
@@ -1889,7 +1889,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginLead.
   ///
   /// In en, this message translates to:
-  /// **'Athletes only. Use the same email and password as the StayAble website.'**
+  /// **'Trainees only. Use the same email and password as the StayAble website.'**
   String get loginLead;
 
   /// No description provided for @loginCreateTitle.
@@ -1901,7 +1901,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginCreateLead.
   ///
   /// In en, this message translates to:
-  /// **'This user stays on this device. It is not a trainer account on the server.'**
+  /// **'This user stays on this device. It is not an instructor account on the server.'**
   String get loginCreateLead;
 
   /// No description provided for @loginCreateAction.
@@ -1979,7 +1979,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginErrorNotAthlete.
   ///
   /// In en, this message translates to:
-  /// **'This app is for athletes. Trainers and admins use the website.'**
+  /// **'This app is for trainees. Instructors and admins use the website.'**
   String get loginErrorNotAthlete;
 
   /// No description provided for @loginErrorInactive.

@@ -50,7 +50,7 @@ export default async function ExercisesPage() {
           <div>
             <h1 className="page-title">Exercises</h1>
             <p className="page-lead">
-              Catalog for home and the gymnastics room. Inactive rows stay hidden from athletes until you review them.
+              Catalog for home and the gymnastics room. Inactive rows stay hidden from trainees until you review them.
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>

@@ -10,7 +10,7 @@ void main() {
       'id': 'u1',
       'email': 'pat@example.com',
       'name': 'Pat',
-      'roles': ['athlete'],
+      'roles': ['trainee'],
       'language': 'he',
       'active': true,
       'birthDate': '1986-09-25T00:00:00.000Z',
@@ -33,6 +33,19 @@ void main() {
     expect(user.trainingVenue, ExerciseVenue.home);
     expect(user.assessment?.injuries, {InjuryArea.knees});
     expect(user.assessment?.goals, [FitnessGoal.bodyToning]);
+    expect(user.isTrainee, isTrue);
+  });
+
+  test('legacy athlete role still counts as trainee', () {
+    final user = RemoteUser.fromJson({
+      'id': 'u2',
+      'email': 'pat@example.com',
+      'name': 'Pat',
+      'roles': ['athlete'],
+      'language': 'en',
+      'active': true,
+    });
+    expect(user.isTrainee, isTrue);
   });
 
   test('athlete profile PATCH body stores assessment and birthday', () {

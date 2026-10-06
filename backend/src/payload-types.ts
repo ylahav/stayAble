@@ -74,6 +74,7 @@ export interface Config {
     'program-assignments': ProgramAssignment;
     'trainer-clients': TrainerClient;
     'workout-sessions': WorkoutSession;
+    'body-measurements': BodyMeasurement;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -88,6 +89,7 @@ export interface Config {
     'program-assignments': ProgramAssignmentsSelect<false> | ProgramAssignmentsSelect<true>;
     'trainer-clients': TrainerClientsSelect<false> | TrainerClientsSelect<true>;
     'workout-sessions': WorkoutSessionsSelect<false> | WorkoutSessionsSelect<true>;
+    'body-measurements': BodyMeasurementsSelect<false> | BodyMeasurementsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -134,7 +136,7 @@ export interface UserAuthOperations {
 export interface User {
   id: string;
   name: string;
-  roles: ('athlete' | 'trainer' | 'admin')[];
+  roles: ('trainee' | 'instructor' | 'admin')[];
   /**
    * URL or local asset path
    */
@@ -173,7 +175,7 @@ export interface User {
   fitnessLevel?: ('beginner' | 'intermediate' | 'advanced') | null;
   goals?: ('generalFitness' | 'strength' | 'mobility' | 'cardio' | 'weightManagement' | 'bodyToning')[] | null;
   /**
-   * Structured athlete profile from the StayAble app (health, goals, lifestyle).
+   * Structured trainee profile from the StayAble app (health, goals, lifestyle).
    */
   assessment?:
     | {
@@ -331,7 +333,7 @@ export interface Exercise {
   createdAt: string;
 }
 /**
- * Reusable collection of exercises. You can edit or delete a program after athletes have trained it. Past sessions keep what they logged. Delete removes assignments; session history stays.
+ * Reusable collection of exercises. You can edit or delete a program after trainees have trained it. Past sessions keep what they logged. Delete removes assignments; session history stays.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "programs".
@@ -344,7 +346,7 @@ export interface Program {
   clientId: string;
   deleted?: boolean | null;
   /**
-   * Who created this template, usually a trainer. Not the athlete who follows it.
+   * Who created this template, usually an instructor. Not the trainee who follows it.
    */
   owner: string | User;
   name: string;
@@ -355,7 +357,7 @@ export interface Program {
    */
   venue: 'home' | 'gym' | 'mixed';
   /**
-   * The workout as a single list. When an athlete trains is set on the assignment.
+   * The workout as a single list. When a trainee trains is set on the assignment.
    */
   exercises?:
     | {
@@ -387,7 +389,7 @@ export interface Program {
   createdAt: string;
 }
 /**
- * Gives an athlete a program. Set when they train here (weekly, daily, or custom). Leave refinements empty to use the program defaults, or override sets, reps, duration, and load for this person only.
+ * Gives a trainee a program. Set when they train here (weekly, daily, or custom). Leave refinements empty to use the program defaults, or override sets, reps, duration, and load for this person only.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "program-assignments".
@@ -401,20 +403,20 @@ export interface ProgramAssignment {
   adminTitle?: string | null;
   deleted?: boolean | null;
   /**
-   * The exercise collection this athlete will follow.
+   * The exercise collection this trainee will follow.
    */
   program: string | Program;
   athlete: string | User;
   assignedBy: string | User;
   /**
-   * When this athlete trains. Specific to this person, not the program.
+   * When this trainee trains. Specific to this person, not the program.
    */
   scheduleType: 'daily' | 'weekly' | 'custom';
   startDate?: string | null;
   endDate?: string | null;
   active?: boolean | null;
   /**
-   * Which days this athlete trains. Weekly uses weekday (1 = Monday). Custom uses a date. Daily can list every weekday or be left empty.
+   * Which days this trainee trains. Weekly uses weekday (1 = Monday). Custom uses a date. Daily can list every weekday or be left empty.
    */
   scheduleDays?:
     | {
@@ -431,7 +433,7 @@ export interface ProgramAssignment {
       }[]
     | null;
   /**
-   * Optional per-exercise overrides for this athlete. Match programExerciseClientId to the slug of a slot on the program. Leave a field empty to keep the program default.
+   * Optional per-exercise overrides for this trainee. Match programExerciseClientId to the slug of a slot on the program. Leave a field empty to keep the program default.
    */
   refinements?:
     | {
@@ -552,6 +554,58 @@ export interface WorkoutSession {
   createdAt: string;
 }
 /**
+ * Dated body composition snapshots (MyTanita PDF import). Not workout history.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "body-measurements".
+ */
+export interface BodyMeasurement {
+  id: string;
+  adminTitle?: string | null;
+  deleted?: boolean | null;
+  athlete: string | User;
+  /**
+   * Date and time printed on the scan, not the import time.
+   */
+  measuredAt: string;
+  source: 'mytanita-pdf' | 'manual';
+  /**
+   * ID printed on the Tanita report
+   */
+  sourceUserId?: string | null;
+  filename?: string | null;
+  heightCm?: number | null;
+  age?: number | null;
+  weightKg?: number | null;
+  bmi?: number | null;
+  bodyFatPercent?: number | null;
+  fatMassKg?: number | null;
+  fatFreeMassKg?: number | null;
+  muscleMassKg?: number | null;
+  boneMassKg?: number | null;
+  proteinKg?: number | null;
+  bodyWaterPercent?: number | null;
+  bodyWaterKg?: number | null;
+  bmrKcal?: number | null;
+  bmrKj?: number | null;
+  metabolicAge?: number | null;
+  visceralFat?: number | null;
+  /**
+   * Parsed snapshot as imported
+   */
+  raw?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -602,6 +656,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'workout-sessions';
         value: string | WorkoutSession;
+      } | null)
+    | ({
+        relationTo: 'body-measurements';
+        value: string | BodyMeasurement;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -887,6 +945,38 @@ export interface WorkoutSessionsSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "body-measurements_select".
+ */
+export interface BodyMeasurementsSelect<T extends boolean = true> {
+  adminTitle?: T;
+  deleted?: T;
+  athlete?: T;
+  measuredAt?: T;
+  source?: T;
+  sourceUserId?: T;
+  filename?: T;
+  heightCm?: T;
+  age?: T;
+  weightKg?: T;
+  bmi?: T;
+  bodyFatPercent?: T;
+  fatMassKg?: T;
+  fatFreeMassKg?: T;
+  muscleMassKg?: T;
+  boneMassKg?: T;
+  proteinKg?: T;
+  bodyWaterPercent?: T;
+  bodyWaterKg?: T;
+  bmrKcal?: T;
+  bmrKj?: T;
+  metabolicAge?: T;
+  visceralFat?: T;
+  raw?: T;
   updatedAt?: T;
   createdAt?: T;
 }

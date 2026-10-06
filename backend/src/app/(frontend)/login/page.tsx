@@ -21,7 +21,7 @@ export default async function LoginPage({ searchParams }: Props) {
       <SiteHeader user={null} current="login" />
       <main className="wrap" style={{ padding: '3rem 0 4rem' }}>
         <h1 className="page-title">Log in</h1>
-        <p className="page-lead">Same account for trainer dashboard, athlete programs, and admin.</p>
+        <p className="page-lead">Same account for instructor dashboard, trainee programs, and admin.</p>
         <div className="panel">
           <LoginForm nextPath={nextPath} />
         </div>

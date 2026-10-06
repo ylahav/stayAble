@@ -19,7 +19,7 @@ export function InviteForm() {
       }}
     >
       <label>
-        Athlete email
+        Trainee email
         <input name="email" type="email" required placeholder="alex@example.com" />
       </label>
       {error && <p className="error">{error}</p>}

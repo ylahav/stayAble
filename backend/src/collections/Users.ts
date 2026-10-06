@@ -1,6 +1,6 @@
 import type { CollectionConfig } from 'payload'
 
-import { adminField, adminOnly, hasRole, isAdmin, type AuthedUser } from '../access/roles'
+import { adminField, adminOnly, canonicalizeRoles, hasRole, isAdmin, type AuthedUser } from '../access/roles'
 import { athleteIdsForTrainer } from '../access/linkedAthletes'
 import { selfOrIn } from '../access/where'
 
@@ -26,7 +26,7 @@ export const Users: CollectionConfig = {
       const user = req.user as AuthedUser | null
       if (!user) return false
       if (isAdmin(user)) return true
-      if (hasRole(user, 'trainer')) {
+      if (hasRole(user, 'instructor')) {
         const ids = await athleteIdsForTrainer(req.payload, user.id)
         return selfOrIn('id', user.id, ids)
       }
@@ -47,11 +47,11 @@ export const Users: CollectionConfig = {
         create: adminField,
         update: adminField,
       },
-      defaultValue: ['athlete'],
+      defaultValue: ['trainee'],
       hasMany: true,
       options: [
-        { label: 'Athlete', value: 'athlete' },
-        { label: 'Trainer', value: 'trainer' },
+        { label: 'Trainee', value: 'trainee' },
+        { label: 'Instructor', value: 'instructor' },
         { label: 'Admin', value: 'admin' },
       ],
       required: true,
@@ -160,7 +160,7 @@ export const Users: CollectionConfig = {
       name: 'assessment',
       type: 'json',
       admin: {
-        description: 'Structured athlete profile from the StayAble app (health, goals, lifestyle).',
+        description: 'Structured trainee profile from the StayAble app (health, goals, lifestyle).',
       },
     },
     {
@@ -193,6 +193,7 @@ export const Users: CollectionConfig = {
             doc.sex = gender
           }
         }
+        doc.roles = canonicalizeRoles(doc.roles)
         return doc
       },
     ],
@@ -203,12 +204,14 @@ export const Users: CollectionConfig = {
         if (actor && !isAdmin(actor)) {
           delete data.active
           if (operation === 'create') {
-            data.roles = ['athlete']
+            data.roles = ['trainee']
           } else if (Array.isArray(existing?.roles) && existing.roles.length > 0) {
-            data.roles = existing.roles
+            data.roles = canonicalizeRoles(existing.roles)
           } else {
-            data.roles = ['athlete']
+            data.roles = ['trainee']
           }
+        } else if (data.roles != null) {
+          data.roles = canonicalizeRoles(data.roles)
         }
         if (!data.language) {
           data.language =

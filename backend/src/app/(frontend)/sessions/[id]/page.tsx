@@ -30,7 +30,7 @@ export default async function SessionPage({ params }: Props) {
 
   if (!session) notFound()
 
-  const backHref = hasRole(user, 'athlete') ? '/programs' : '/dashboard'
+  const backHref = hasRole(user, 'trainee') ? '/programs' : '/dashboard'
 
   return (
     <>

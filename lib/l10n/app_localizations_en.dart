@@ -434,11 +434,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get close => 'Close';
 
   @override
-  String get setupTitle => 'Private or with a trainer?';
+  String get setupTitle => 'Private or with an instructor?';
 
   @override
   String get setupLead =>
-      'First choice: stay private on this device, or sign in as a user your trainer created on the server.';
+      'First choice: stay private on this device, or sign in as a user your instructor created on the server.';
 
   @override
   String get setupServerLead =>
@@ -452,24 +452,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changeSetupHint =>
-      'Choose private or trainer again. You will be signed out.';
+      'Choose private or instructor again. You will be signed out.';
 
   @override
   String get modeChooserTitle => 'How do you want to train?';
 
   @override
   String get modeChooserLead =>
-      'Private on this device, or with a trainer on the server.';
+      'Private on this device, or with an instructor on the server.';
 
   @override
-  String get modeTrainerTitle => 'With a trainer';
+  String get modeTrainerTitle => 'With an instructor';
 
   @override
   String get modeTrainerLead =>
-      'Network. Your trainer created you as a user on the StayAble server. Programs and results are stored there.';
+      'Network. Your instructor created you as a user on the StayAble server. Programs and results are stored there.';
 
   @override
-  String get modeTrainerAction => 'Continue with trainer';
+  String get modeTrainerAction => 'Continue with instructor';
 
   @override
   String get modeLocalTitle => 'Private';
@@ -513,14 +513,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Create a user on this device, or sign in. Each person keeps their own programs here.';
 
   @override
-  String get backToModes => 'Private or trainer';
+  String get backToModes => 'Private or instructor';
 
   @override
   String get createProgram => 'Create program';
 
   @override
   String get createProgramHow =>
-      'Build it yourself, or let StayAble use your athlete profile.';
+      'Build it yourself, or let StayAble use your trainee profile.';
 
   @override
   String get createProgramManualTitle => 'Manual';
@@ -536,7 +536,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get createProgramWizardLead =>
-      'StayAble builds a program from your athlete profile. Update health, goals, and lifestyle there — not on each program.';
+      'StayAble builds a program from your trainee profile. Update health, goals, and lifestyle there — not on each program.';
 
   @override
   String get createProgramWizardAction => 'Build from profile';
@@ -546,11 +546,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'The wizard needs an internet connection to the StayAble server.';
 
   @override
-  String get wizardTitle => 'Athlete profile';
+  String get wizardTitle => 'Trainee profile';
 
   @override
   String get wizardLead =>
-      'Age is only a starting point. Your athlete profile covers health, goals, fitness, lifestyle, and habits.';
+      'Age is only a starting point. Your trainee profile covers health, goals, fitness, lifestyle, and habits.';
 
   @override
   String get wizardVenue => 'Where will you train?';
@@ -858,10 +858,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wizardAssessmentSaved => 'Assessment saved';
 
   @override
-  String get assessTitle => 'Athlete profile';
+  String get assessTitle => 'Trainee profile';
 
   @override
-  String get assessChange => 'Edit athlete profile';
+  String get assessChange => 'Edit trainee profile';
 
   @override
   String get assessUnset => 'Not completed yet';
@@ -954,7 +954,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appModeLocal => 'Private';
 
   @override
-  String get appModeCloud => 'With a trainer';
+  String get appModeCloud => 'With an instructor';
 
   @override
   String get noProgramLocal =>
@@ -968,14 +968,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginLead =>
-      'Athletes only. Use the same email and password as the StayAble website.';
+      'Trainees only. Use the same email and password as the StayAble website.';
 
   @override
   String get loginCreateTitle => 'Create user';
 
   @override
   String get loginCreateLead =>
-      'This user stays on this device. It is not a trainer account on the server.';
+      'This user stays on this device. It is not an instructor account on the server.';
 
   @override
   String get loginCreateAction => 'Create user';
@@ -1016,7 +1016,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginErrorNotAthlete =>
-      'This app is for athletes. Trainers and admins use the website.';
+      'This app is for trainees. Instructors and admins use the website.';
 
   @override
   String get loginErrorInactive => 'This account is inactive.';

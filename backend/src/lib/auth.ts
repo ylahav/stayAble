@@ -5,16 +5,16 @@ import { getPayload } from 'payload'
 import { hasRole, type AuthedUser, type Role } from '@/access/roles'
 import config from '@payload-config'
 
-export async function getCurrentUser(): Promise<AuthedUser | null> {
+export async function getCurrentUser(from?: Headers): Promise<AuthedUser | null> {
   const payload = await getPayload({ config })
-  const { user } = await payload.auth({ headers: await headers() })
+  const { user } = await payload.auth({ headers: from ?? (await headers()) })
   if (!user) return null
   return user as AuthedUser
 }
 
 export function defaultPathFor(user: AuthedUser): string {
-  if (hasRole(user, 'trainer')) return '/dashboard'
-  if (hasRole(user, 'athlete')) return '/programs'
+  if (hasRole(user, 'instructor')) return '/dashboard'
+  if (hasRole(user, 'trainee')) return '/programs'
   if (hasRole(user, 'admin')) return '/admin'
   return '/'
 }
@@ -35,8 +35,8 @@ export async function requireRoles(roles: Role[]): Promise<AuthedUser> {
 }
 
 function rolesPath(role: Role): string {
-  if (role === 'trainer') return '/dashboard'
-  if (role === 'athlete') return '/programs'
+  if (role === 'instructor') return '/dashboard'
+  if (role === 'trainee') return '/programs'
   return '/admin'
 }
 

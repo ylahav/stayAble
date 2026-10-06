@@ -12,7 +12,7 @@ export const Programs: CollectionConfig = withCatalogTransfer({
   admin: {
     defaultColumns: ['clientId', 'name', 'owner', 'venue', 'active', 'updatedAt'],
     description:
-      'Reusable collection of exercises. You can edit or delete a program after athletes have trained it. Past sessions keep what they logged. Delete removes assignments; session history stays.',
+      'Reusable collection of exercises. You can edit or delete a program after trainees have trained it. Past sessions keep what they logged. Delete removes assignments; session history stays.',
     useAsTitle: 'name',
     components: {
       beforeListTable: ['/components/admin/CatalogTransfer'],
@@ -45,7 +45,7 @@ export const Programs: CollectionConfig = withCatalogTransfer({
         return typeof program === 'string' ? program : program.id
       })
 
-      if (hasRole(user, 'trainer')) {
+      if (hasRole(user, 'instructor')) {
         const athleteIds = await athleteIdsForTrainer(req.payload, user.id)
         const clientAssigned = await req.payload.find({
           collection: 'program-assignments',
@@ -80,7 +80,7 @@ export const Programs: CollectionConfig = withCatalogTransfer({
       type: 'relationship',
       relationTo: 'users',
       required: true,
-      admin: { description: 'Who created this template, usually a trainer. Not the athlete who follows it.' },
+      admin: { description: 'Who created this template, usually an instructor. Not the trainee who follows it.' },
     },
     { name: 'name', type: 'text', required: true },
     { name: 'description', type: 'textarea' },
@@ -102,7 +102,7 @@ export const Programs: CollectionConfig = withCatalogTransfer({
       type: 'array',
       labels: { singular: 'Exercise', plural: 'Exercises' },
       admin: {
-        description: 'The workout as a single list. When an athlete trains is set on the assignment.',
+        description: 'The workout as a single list. When a trainee trains is set on the assignment.',
       },
       fields: [
         nestedClientIdField,

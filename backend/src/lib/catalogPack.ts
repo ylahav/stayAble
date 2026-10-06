@@ -234,7 +234,7 @@ export async function exportCatalogPack(
 ): Promise<{ pack?: CatalogPack; error?: string; status?: number }> {
   const user = req.user as AuthedUser | null
   if (!user || !isStaff(user)) {
-    return { error: 'Trainer or admin role required.', status: 403 }
+    return { error: 'Instructor or admin role required.', status: 403 }
   }
 
   const ids = asIdList(body.ids)
@@ -321,7 +321,7 @@ export async function importCatalogPack(
 ): Promise<{ counts?: CatalogCounts; error?: string; status?: number }> {
   const user = req.user as AuthedUser | null
   if (!user || !isStaff(user)) {
-    return { error: 'Trainer or admin role required.', status: 403 }
+    return { error: 'Instructor or admin role required.', status: 403 }
   }
 
   const payload = req.payload

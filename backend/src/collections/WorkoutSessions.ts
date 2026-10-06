@@ -23,7 +23,7 @@ export const WorkoutSessions: CollectionConfig = {
       const user = req.user as AuthedUser | null
       if (!user) return false
       if (isAdmin(user)) return true
-      if (hasRole(user, 'trainer')) {
+      if (hasRole(user, 'instructor')) {
         const ids = await athleteIdsForTrainer(req.payload, user.id)
         return selfOrIn('athlete', user.id, ids)
       }
@@ -39,7 +39,7 @@ export const WorkoutSessions: CollectionConfig = {
     clientIdField,
     adminTitleField,
     deletedField,
-    { name: 'athlete', type: 'relationship', relationTo: 'users', required: true },
+    { name: 'athlete', type: 'relationship', relationTo: 'users', required: true, label: 'Trainee' },
     { name: 'program', type: 'relationship', relationTo: 'programs' },
     { name: 'programDayClientId', type: 'text' },
     { name: 'startedAt', type: 'date', required: true },

@@ -28,7 +28,10 @@ class RemoteUser {
   final List<FitnessGoal> goals;
   final ExerciseVenue? trainingVenue;
 
-  bool get isAthlete => roles.contains('athlete');
+  bool get isTrainee =>
+      roles.contains('trainee') || roles.contains('athlete');
+
+  bool get isAthlete => isTrainee;
 
   factory RemoteUser.fromJson(Map<String, dynamic> json) {
     final roles = json['roles'];
@@ -94,9 +97,9 @@ class AuthSession {
       localMode: true,
       user: RemoteUser(
         id: 'local',
-        email: 'athlete@local',
+        email: 'trainee@local',
         name: 'You',
-        roles: const ['athlete'],
+        roles: const ['trainee'],
         language: language,
         active: true,
       ),

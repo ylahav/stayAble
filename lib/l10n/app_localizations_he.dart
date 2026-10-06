@@ -433,11 +433,11 @@ class AppLocalizationsHe extends AppLocalizations {
   String get close => 'סגור';
 
   @override
-  String get setupTitle => 'פרטי או עם מאמן?';
+  String get setupTitle => 'פרטי או עם מדריך?';
 
   @override
   String get setupLead =>
-      'בחירה ראשונה: להישאר פרטיים במכשיר, או להתחבר כמשתמש שהמאמן הגדיר בשרת.';
+      'בחירה ראשונה: להישאר פרטיים במכשיר, או להתחבר כמשתמש שהמדריך הגדיר בשרת.';
 
   @override
   String get setupServerLead =>
@@ -450,23 +450,23 @@ class AppLocalizationsHe extends AppLocalizations {
   String get changeSetup => 'שינוי הגדרת המכשיר';
 
   @override
-  String get changeSetupHint => 'בחרו שוב פרטי או מאמן. תנותקו מהחשבון.';
+  String get changeSetupHint => 'בחרו שוב פרטי או מדריך. תנותקו מהחשבון.';
 
   @override
   String get modeChooserTitle => 'איך תרצו להתאמן?';
 
   @override
-  String get modeChooserLead => 'פרטי במכשיר, או עם מאמן בשרת.';
+  String get modeChooserLead => 'פרטי במכשיר, או עם מדריך בשרת.';
 
   @override
-  String get modeTrainerTitle => 'עם מאמן';
+  String get modeTrainerTitle => 'עם מדריך';
 
   @override
   String get modeTrainerLead =>
-      'רשת. המאמן הגדיר אתכם כמשתמש בשרת StayAble. התוכניות והתוצאות נשמרות שם.';
+      'רשת. המדריך הגדיר אתכם כמשתמש בשרת StayAble. התוכניות והתוצאות נשמרות שם.';
 
   @override
-  String get modeTrainerAction => 'המשך עם מאמן';
+  String get modeTrainerAction => 'המשך עם מדריך';
 
   @override
   String get modeLocalTitle => 'פרטי';
@@ -510,14 +510,13 @@ class AppLocalizationsHe extends AppLocalizations {
       'צרו משתמש במכשיר, או התחברו. לכל אדם יש תוכניות משלו כאן.';
 
   @override
-  String get backToModes => 'פרטי או מאמן';
+  String get backToModes => 'פרטי או מדריך';
 
   @override
   String get createProgram => 'יצירת תוכנית';
 
   @override
-  String get createProgramHow =>
-      'בנו לבד, או ש־StayAble ישתמש בפרופיל הספורטאי.';
+  String get createProgramHow => 'בנו לבד, או ש־StayAble ישתמש בפרופיל המתאמן.';
 
   @override
   String get createProgramManualTitle => 'ידני';
@@ -533,7 +532,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get createProgramWizardLead =>
-      'StayAble בונה תוכנית מפרופיל הספורטאי. בריאות, מטרות ואורח חיים מעדכנים שם — לא בכל תוכנית.';
+      'StayAble בונה תוכנית מפרופיל המתאמן. בריאות, מטרות ואורח חיים מעדכנים שם — לא בכל תוכנית.';
 
   @override
   String get createProgramWizardAction => 'בנייה מהפרופיל';
@@ -542,11 +541,11 @@ class AppLocalizationsHe extends AppLocalizations {
   String get createProgramWizardOffline => 'האשף זקוק לחיבור לשרת StayAble.';
 
   @override
-  String get wizardTitle => 'פרופיל ספורטאי';
+  String get wizardTitle => 'פרופיל מתאמן';
 
   @override
   String get wizardLead =>
-      'גיל הוא רק נקודת התחלה. פרופיל הספורטאי כולל בריאות, מטרות, כושר, אורח חיים והרגלים.';
+      'גיל הוא רק נקודת התחלה. פרופיל המתאמן כולל בריאות, מטרות, כושר, אורח חיים והרגלים.';
 
   @override
   String get wizardVenue => 'איפה תתאמנו?';
@@ -847,10 +846,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get wizardAssessmentSaved => 'האבחון נשמר';
 
   @override
-  String get assessTitle => 'פרופיל ספורטאי';
+  String get assessTitle => 'פרופיל מתאמן';
 
   @override
-  String get assessChange => 'עריכת פרופיל ספורטאי';
+  String get assessChange => 'עריכת פרופיל מתאמן';
 
   @override
   String get assessUnset => 'עדיין לא מולא';
@@ -943,7 +942,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get appModeLocal => 'פרטי';
 
   @override
-  String get appModeCloud => 'עם מאמן';
+  String get appModeCloud => 'עם מדריך';
 
   @override
   String get noProgramLocal => 'עדיין אין תוכנית. צרו אחת מרשימת התרגילים.';
@@ -956,14 +955,14 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get loginLead =>
-      'לספורטאים בלבד. אותו אימייל וסיסמה כמו באתר StayAble.';
+      'למתאמנים בלבד. אותו אימייל וסיסמה כמו באתר StayAble.';
 
   @override
   String get loginCreateTitle => 'יצירת משתמש';
 
   @override
   String get loginCreateLead =>
-      'המשתמש נשאר במכשיר הזה. זה לא חשבון מאמן בשרת.';
+      'המשתמש נשאר במכשיר הזה. זה לא חשבון מדריך בשרת.';
 
   @override
   String get loginCreateAction => 'יצירת משתמש';
@@ -1003,7 +1002,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get loginErrorNotAthlete =>
-      'האפליקציה לספורטאים. מאמנים ומנהלים נכנסים באתר.';
+      'האפליקציה למתאמנים. מדריכים ומנהלים נכנסים באתר.';
 
   @override
   String get loginErrorInactive => 'החשבון אינו פעיל.';

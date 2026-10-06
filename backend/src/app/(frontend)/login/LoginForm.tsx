@@ -37,8 +37,8 @@ export function LoginForm({ nextPath }: Props) {
     const roles = body.user?.roles ?? []
     let dest = nextPath
     if (dest === '/' || dest === '/login') {
-      if (roles.includes('trainer')) dest = '/dashboard'
-      else if (roles.includes('athlete')) dest = '/programs'
+      if (roles.includes('instructor') || roles.includes('trainer')) dest = '/dashboard'
+      else if (roles.includes('trainee') || roles.includes('athlete')) dest = '/programs'
       else if (roles.includes('admin')) dest = '/admin'
     }
     window.location.href = dest

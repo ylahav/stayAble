@@ -21,7 +21,7 @@ import { DeleteProgramButton } from './DeleteProgramButton'
 import { InviteForm } from './InviteForm'
 
 export default async function DashboardPage() {
-  const user = await requireRoles(['trainer', 'admin'])
+  const user = await requireRoles(['instructor', 'admin'])
   const payload = await getPayloadClient()
 
   const [links, programs, sessions] = await Promise.all([
@@ -99,13 +99,16 @@ export default async function DashboardPage() {
           <div>
             <h1 className="page-title">Dashboard</h1>
             <p className="page-lead">
-              Programs are reusable exercise collections. Assign one (or more) to a client, then
+              Programs are reusable exercise collections. Assign one (or more) to a trainee, then
               refine when they train and the prescription if needed.
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <Link className="btn" href="/import-exercises">
               Import exercises
+            </Link>
+            <Link className="btn" href="/import-body">
+              Import body data
             </Link>
             {isAdmin(user) ? (
               <Link className="btn btn-ghost" href="/admin/backup">
@@ -118,7 +121,7 @@ export default async function DashboardPage() {
         <div className="stat-row">
           <div className="stat">
             <b>{activeClients.length}</b>
-            <span className="muted">Active clients</span>
+            <span className="muted">Active trainees</span>
           </div>
           <div className="stat">
             <b>{trainedThisWeek.size}</b>
@@ -140,7 +143,7 @@ export default async function DashboardPage() {
           <table className="table">
             <thead>
               <tr>
-                <th>Client</th>
+                <th>Trainee</th>
                 <th>Status</th>
                 <th>Trains</th>
                 <th>Program</th>
@@ -151,7 +154,7 @@ export default async function DashboardPage() {
               {links.docs.length === 0 && (
                 <tr>
                   <td colSpan={5} className="muted">
-                    No clients yet. Invite someone with an account.
+                    No trainees yet. Invite someone with an account.
                   </td>
                 </tr>
               )}
@@ -283,7 +286,7 @@ export default async function DashboardPage() {
               <thead>
                 <tr>
                   <th>When</th>
-                  <th>Athlete</th>
+                  <th>Trainee</th>
                   <th>Where</th>
                   <th>Status</th>
                   <th>Minutes</th>

@@ -12,7 +12,7 @@ export default async function HomePage() {
       <main className="wrap hero">
         <h1>StayAble — keep your body able.</h1>
         <p className="lede">
-          A home-or-gym practice: follow a program, log what you really did, and let a trainer
+          A home-or-gym practice: follow a program, log what you really did, and let an instructor
           assign the next block. Not a new body. The same one, for years. This site is where you
           sign in; workouts happen in the app.
         </p>

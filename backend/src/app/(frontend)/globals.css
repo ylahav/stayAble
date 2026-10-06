@@ -347,3 +347,45 @@ input:disabled {
   border-color: var(--mat);
   background: rgb(14 107 79 / 8%);
 }
+
+.row-open {
+  cursor: pointer;
+}
+
+.row-open:hover,
+.row-open:focus-visible {
+  background: rgb(14 107 79 / 7%);
+  outline: none;
+}
+
+.sheet {
+  width: min(44rem, calc(100% - 2rem));
+  max-height: calc(100% - 3rem);
+  overflow: auto;
+  margin: auto;
+  border: 1px solid var(--line);
+  background: var(--chalk);
+  color: inherit;
+  padding: 1.35rem 1.5rem 1.5rem;
+}
+
+.sheet::backdrop {
+  background: rgb(14 20 16 / 46%);
+}
+
+.delta-up,
+.delta-down {
+  font-variant-numeric: tabular-nums;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
