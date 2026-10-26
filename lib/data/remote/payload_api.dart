@@ -3,11 +3,17 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:payload_client/payload_client.dart'
+    show CollectionRef, FindOptions, PayloadClient, PayloadException;
 
 import '../../domain/domain.dart';
+import '../../payload/models.dart';
 import 'athlete_profile.dart';
 import 'catalog_check.dart';
 import 'catalog_sync.dart';
+import 'cms_exercises.dart';
+import 'cms_programs.dart';
+import 'cms_users.dart';
 import 'payload_config.dart';
 
 class PayloadApi {
@@ -18,78 +24,89 @@ class PayloadApi {
   final http.Client _client;
   final String baseUrl;
 
-  Future<AuthSession> login(String email, String password) async {
-    final body = await _send(
-      () => _client.post(
-        _uri('/api/users/login'),
-        headers: _jsonHeaders(),
-        body: jsonEncode({'email': email.trim(), 'password': password}),
-      ),
-    );
-    if (body.statusCode == 401 || body.statusCode == 400) {
-      throw const AuthException(AuthFailure.invalidCredentials);
-    }
-    if (body.statusCode < 200 || body.statusCode >= 300) {
-      throw AuthException(AuthFailure.unknown, _errorMessage(body.body));
-    }
+  /// A payload_client for one call, on this API's shared http.Client.
+  /// Each call carries its own token, as the methods here always have.
+  PayloadClient _cms([String? token]) =>
+      PayloadClient(baseUrl: Uri.parse(baseUrl), token: token, httpClient: _client);
 
-    final json = _decode(body.body);
-    final token = json['token'] as String?;
-    final userJson = json['user'];
-    if (token == null || userJson is! Map<String, dynamic>) {
+  /// Runs a payload_client call with the timeout and errors this API has
+  /// always had: [AuthException] for auth, network and server failures.
+  Future<T> _guard<T>(
+    Future<T> Function() call, {
+    Set<int> invalidCredentials = const {401, 403},
+  }) async {
+    try {
+      return await call().timeout(const Duration(seconds: 20));
+    } on PayloadException catch (e) {
+      if (invalidCredentials.contains(e.statusCode)) {
+        throw const AuthException(AuthFailure.invalidCredentials);
+      }
+      throw AuthException(AuthFailure.unknown, e.message);
+    } on SocketException {
+      throw const AuthException(AuthFailure.network);
+    } on TimeoutException {
+      throw const AuthException(AuthFailure.network);
+    } on http.ClientException {
+      throw const AuthException(AuthFailure.network);
+    }
+  }
+
+  Future<AuthSession> login(String email, String password) async {
+    final auth = await _guard(
+      () => _cms().login(
+        Collections.users.slug,
+        email: email.trim(),
+        password: password,
+      ),
+      // A wrong password is a 401; a malformed email is a 400.
+      invalidCredentials: const {400, 401},
+    );
+    final token = auth.token;
+    if (token == null || auth.user.isEmpty) {
       throw const AuthException(AuthFailure.unknown);
     }
-    return _sessionFrom(token, RemoteUser.fromJson(userJson));
+    return _sessionFrom(token, remoteUserFromCms(CmsUser.fromJson(auth.user)));
   }
 
   Future<RemoteUser> me(String token) async {
-    final body = await _send(
-      () => _client.get(
-        _uri('/api/users/me'),
-        headers: _jsonHeaders(token: token),
-      ),
-    );
-    if (body.statusCode == 401 || body.statusCode == 403) {
-      throw const AuthException(AuthFailure.invalidCredentials);
-    }
-    if (body.statusCode < 200 || body.statusCode >= 300) {
-      throw AuthException(AuthFailure.unknown, _errorMessage(body.body));
-    }
-    final json = _decode(body.body);
-    final userJson = json['user'] is Map<String, dynamic>
-        ? json['user'] as Map<String, dynamic>
-        : json;
-    return RemoteUser.fromJson(userJson);
+    final auth = await _guard(() => _cms(token).me(Collections.users.slug));
+    // Payload answers an expired token with `{user: null}`, not a 401.
+    if (auth == null) throw const AuthException(AuthFailure.invalidCredentials);
+    return remoteUserFromCms(CmsUser.fromJson(auth.user));
   }
 
   Future<void> logout(String token) async {
     try {
-      await _send(
-        () => _client.post(
-          _uri('/api/users/logout'),
-          headers: _jsonHeaders(token: token),
-        ),
-      );
+      await _guard(() => _cms(token).logout(Collections.users.slug));
     } catch (_) {
       // Local sign-out still proceeds.
     }
   }
 
   Future<List<Exercise>> fetchExercises(String token) async {
-    return _exercisesFrom(
-      await _read(
-        token,
-        path: '/api/exercises',
-        query: {
-          'limit': '300',
-          'depth': '1',
-          'pagination': 'false',
-          'where[deleted][not_equals]': 'true',
-        },
+    final page = await _guard(
+      () => _cms(token).find(
+        Collections.exercises,
+        options: const FindOptions(
+          limit: 300,
+          depth: 1,
+          pagination: false,
+          where: {
+            'deleted': {'not_equals': true},
+          },
+        ),
       ),
     );
+    return [
+      // The app keys exercises by clientId, so one without it can't be used.
+      for (final doc in page.docs)
+        if (doc.clientId != null) exerciseFromCms(doc, baseUrl),
+    ];
   }
 
+  /// Stays on raw JSON: the public catalog endpoint sends `instructions`
+  /// as HTML strings, not the rich text the exercises collection holds, so
+  /// it doesn't have CmsExercise's shape.
   Future<List<Exercise>> fetchPublicCatalog() async {
     final body = await _getPublic([
       '/api/public-catalog',
@@ -127,31 +144,25 @@ class PayloadApi {
     required String athleteId,
     required String localUserId,
   }) async {
-    final json = await _read(
-      token,
-      path: '/api/program-assignments',
-      query: {
-        'limit': '20',
-        'depth': '2',
-        'where[athlete][equals]': athleteId,
-        'where[active][equals]': 'true',
-        'sort': '-updatedAt',
-      },
+    final page = await _guard(
+      () => _cms(token).find(
+        Collections.programAssignments,
+        options: FindOptions(
+          limit: 20,
+          // assignment → program → exercise
+          depth: 2,
+          where: {
+            'athlete': {'equals': athleteId},
+            'active': {'equals': true},
+          },
+          sort: '-updatedAt',
+        ),
+      ),
     );
-    final docs = json['docs'];
-    if (docs is! List || docs.isEmpty) return const [];
     final trees = <RemoteProgramTree>[];
     final seen = <String>{};
-    for (final doc in docs) {
-      if (doc is! Map) continue;
-      final assignment = Map<String, dynamic>.from(doc);
-      final program = assignment['program'];
-      if (program is! Map) continue;
-      final tree = programFromPayload(
-        Map<String, dynamic>.from(program),
-        localUserId,
-        assignment: assignment,
-      );
+    for (final assignment in page.docs) {
+      final tree = programFromCms(assignment, localUserId);
       if (tree == null || !seen.add(tree.program.id)) continue;
       trees.add(tree);
     }
@@ -167,16 +178,17 @@ class PayloadApi {
     required List<FitnessGoal> goals,
     required ExerciseVenue trainingVenue,
   }) async {
-    await _write(
-      token,
-      method: 'PATCH',
-      path: '/api/users/$userId',
-      body: athleteProfilePayload(
+    await _guard(
+      () => _cms(token).update(
+        CollectionRef.raw(Collections.users.slug),
+        userId,
+        athleteProfilePayload(
         birthDate: birthDate,
         assessment: assessment,
         fitnessLevel: fitnessLevel,
         goals: goals,
-        trainingVenue: trainingVenue,
+          trainingVenue: trainingVenue,
+        ),
       ),
     );
   }
@@ -188,30 +200,24 @@ class PayloadApi {
     final exerciseIds = await _exerciseIdMap(token);
     final programId = await _findId(
       token,
-      collection: 'programs',
+      collection: Collections.programs.slug,
       clientId: playback.day.programId,
     );
     final payload = _sessionPayload(playback, exerciseIds, programId);
     final existingId = await _findId(
       token,
-      collection: 'workout-sessions',
+      collection: Collections.workoutSessions.slug,
       clientId: playback.session.id,
     );
+    // The session goes up as a JSON map built by _sessionPayload: writes
+    // aren't typed yet (generated classes need an id, which a new document
+    // doesn't have).
+    final sessions = CollectionRef.raw(Collections.workoutSessions.slug);
     if (existingId == null) {
-      await _write(
-        token,
-        method: 'POST',
-        path: '/api/workout-sessions',
-        body: payload,
-      );
+      await _guard(() => _cms(token).create(sessions, payload));
       return;
     }
-    await _write(
-      token,
-      method: 'PATCH',
-      path: '/api/workout-sessions/$existingId',
-      body: payload,
-    );
+    await _guard(() => _cms(token).update(sessions, existingId, payload));
   }
 
   Map<String, dynamic> _sessionPayload(
@@ -280,40 +286,38 @@ class PayloadApi {
   }
 
   Future<Map<String, String>> _exerciseIdMap(String token) async {
-    final json = await _read(
-      token,
-      path: '/api/exercises',
-      query: {'limit': '100', 'depth': '0', 'pagination': 'false'},
+    final page = await _guard(
+      () => _cms(token).find(
+        Collections.exercises,
+        options: const FindOptions(limit: 100, depth: 0, pagination: false),
+      ),
     );
-    final docs = json['docs'];
-    final map = <String, String>{};
-    if (docs is List) {
-      for (final doc in docs) {
-        if (doc is Map<String, dynamic>) {
-          final clientId = doc['clientId'] as String?;
-          final id = doc['id'] as String?;
-          if (clientId != null && id != null) map[clientId] = id;
-        }
-      }
-    }
-    return map;
+    return {
+      for (final doc in page.docs)
+        if (doc.clientId case final clientId?) clientId: doc.id,
+    };
   }
 
+  /// The Payload id of the document with [clientId], from any collection
+  /// that has one. Raw JSON on purpose: only `id` is read.
   Future<String?> _findId(
     String token, {
     required String collection,
     required String clientId,
   }) async {
-    final json = await _read(
-      token,
-      path: '/api/$collection',
-      query: {'limit': '1', 'depth': '0', 'where[clientId][equals]': clientId},
+    final page = await _guard(
+      () => _cms(token).find(
+        CollectionRef.raw(collection),
+        options: FindOptions(
+          limit: 1,
+          depth: 0,
+          where: {
+            'clientId': {'equals': clientId},
+          },
+        ),
+      ),
     );
-    final docs = json['docs'];
-    if (docs is List && docs.isNotEmpty && docs.first is Map<String, dynamic>) {
-      return (docs.first as Map<String, dynamic>)['id'] as String?;
-    }
-    return null;
+    return page.docs.isEmpty ? null : page.docs.first['id'] as String?;
   }
 
   /// Public catalog routes must not send a JWT or `Content-Type` on GET.
@@ -345,43 +349,6 @@ class PayloadApi {
     return statusCode == 401 || statusCode == 403 || statusCode == 404;
   }
 
-  Future<Map<String, dynamic>> _read(
-    String token, {
-    required String path,
-    Map<String, String>? query,
-  }) async {
-    final uri = _uri(path).replace(queryParameters: query);
-    final body = await _send(
-      () => _client.get(uri, headers: _jsonHeaders(token: token)),
-    );
-    _throwIfFailed(body);
-    return _decode(body.body);
-  }
-
-  Future<void> _write(
-    String token, {
-    required String method,
-    required String path,
-    required Map<String, dynamic> body,
-  }) async {
-    final encoded = jsonEncode(body);
-    final response = await _send(() {
-      if (method == 'PATCH') {
-        return _client.patch(
-          _uri(path),
-          headers: _jsonHeaders(token: token),
-          body: encoded,
-        );
-      }
-      return _client.post(
-        _uri(path),
-        headers: _jsonHeaders(token: token),
-        body: encoded,
-      );
-    });
-    _throwIfFailed(response);
-  }
-
   void _throwIfFailed(http.Response body) {
     if (body.statusCode == 401 || body.statusCode == 403) {
       throw const AuthException(AuthFailure.invalidCredentials);
@@ -402,14 +369,6 @@ class PayloadApi {
   }
 
   Uri _uri(String path) => Uri.parse('$baseUrl$path');
-
-  Map<String, String> _jsonHeaders({String? token}) {
-    return {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'JWT $token',
-    };
-  }
 
   Future<http.Response> _send(Future<http.Response> Function() request) async {
     try {

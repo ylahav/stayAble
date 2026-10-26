@@ -29,6 +29,10 @@ dependencies:
   plinth_blocks: ^0.4.0
   plinth_charts: ^0.1.1
   flutter_widget_from_html_core: ^0.17.0
+  payload_client:
+    path: ../payload_flutter/packages/payload_client
+  payload_core:
+    path: ../payload_flutter/packages/payload_core
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +41,12 @@ dev_dependencies:
   drift_dev: ^2.35.0
   build_runner: ^2.16.1
   flutter_launcher_icons: ^0.14.4
+  payload_dart_gen:
+    path: ../payload_flutter/packages/payload_dart_gen
+
+dependency_overrides:
+  payload_core:
+    path: ../payload_flutter/packages/payload_core
 
 flutter_launcher_icons:
   android: true
