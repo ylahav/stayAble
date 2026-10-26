@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { backupPlugin } from '@yairl/payload-db-backup-restore'
+import { schemaExport } from '@yairl/payload-schema-export'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
@@ -22,7 +23,6 @@ import { seedCompletedSession } from './seed/sessions'
 import { publicCatalogRootEndpoints } from './lib/catalogEndpoints'
 import { migrateLegacyUserRoles } from './lib/migrateRoles'
 import { configuredOrigins, publicServerURL } from './lib/publicOrigin'
-import { schemaExport } from './plugins/schemaExport'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -83,8 +83,8 @@ export default buildConfig({
     backupPlugin({
       access: (req) => isAdmin(req.user as AuthedUser),
     }),
-    // GET /api/_schema: the data model as JSON, for payload_dart_gen and
-    // the payload_editor app. Staff only; trainees have no use for it.
+    // GET /api/_schema and the admin page at /admin/schema: the data model
+    // as JSON, for payload_dart_gen and other clients. Staff only.
     schemaExport({
       access: ({ req }) => isStaff(req.user as AuthedUser),
     }),

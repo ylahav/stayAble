@@ -181,6 +181,9 @@ importers:
       '@yairl/payload-db-backup-restore':
         specifier: ^0.1.2
         version: 0.1.2(@payloadcms/next@3.90.2(@types/react@19.3.0)(graphql@17.0.2)(monaco-editor@0.56.0)(next@16.3.8(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(@payloadcms/ui@3.90.2(@types/react@19.3.0)(monaco-editor@0.56.0)(next@16.3.8(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react@19.3.0)
+      '@yairl/payload-schema-export':
+        specifier: ^0.1.0
+        version: 0.1.0(@payloadcms/next@3.90.2(@types/react@19.3.0)(graphql@17.0.2)(monaco-editor@0.56.0)(next@16.3.8(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(@payloadcms/ui@3.90.2(@types/react@19.3.0)(monaco-editor@0.56.0)(next@16.3.8(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react@19.3.0)
       cross-env:
         specifier: ^10.1.0
         version: 10.1.0
@@ -1292,6 +1295,15 @@ packages:
 
   '@yairl/payload-db-backup-restore@0.1.2':
     resolution: {integrity: sha512-pvx+H14gzqvsp+YNIvrw3/Vz+KDwDYJj9nCS9TEJoDM8sMczhjd6lROoL6/brRlBWAJ67FS1Y0qEUXBlmcu4aw==}
+    engines: {node: '>=20.9.0'}
+    peerDependencies:
+      '@payloadcms/next': ^3.0.0
+      '@payloadcms/ui': ^3.0.0
+      payload: ^3.0.0
+      react: ^18.0.0 || ^19.0.0
+
+  '@yairl/payload-schema-export@0.1.0':
+    resolution: {integrity: sha512-NbqP89HKSB1yx4fL0OVtsKinTrUD63c/A3SDPx1KRBPlM03BktHRxU4nLVm1st4zO/0rcoW2TCJ4F3YGlZOnSg==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       '@payloadcms/next': ^3.0.0
@@ -3419,6 +3431,13 @@ snapshots:
       '@payloadcms/next': 3.90.2(@types/react@19.3.0)(graphql@17.0.2)(monaco-editor@0.56.0)(next@16.3.8(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       '@payloadcms/ui': 3.90.2(@types/react@19.3.0)(monaco-editor@0.56.0)(next@16.3.8(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       bson: 6.10.4
+      payload: 3.90.2(graphql@17.0.2)(typescript@6.0.3)
+      react: 19.3.0
+
+  '@yairl/payload-schema-export@0.1.0(@payloadcms/next@3.90.2(@types/react@19.3.0)(graphql@17.0.2)(monaco-editor@0.56.0)(next@16.3.8(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(@payloadcms/ui@3.90.2(@types/react@19.3.0)(monaco-editor@0.56.0)(next@16.3.8(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react@19.3.0)':
+    dependencies:
+      '@payloadcms/next': 3.90.2(@types/react@19.3.0)(graphql@17.0.2)(monaco-editor@0.56.0)(next@16.3.8(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
+      '@payloadcms/ui': 3.90.2(@types/react@19.3.0)(monaco-editor@0.56.0)(next@16.3.8(@opentelemetry/api@1.9.1)(@types/node@26.6.4)(babel-plugin-macros@3.1.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.77.4))(payload@3.90.2(graphql@17.0.2)(typescript@6.0.3))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@6.0.3)
       payload: 3.90.2(graphql@17.0.2)(typescript@6.0.3)
       react: 19.3.0
 

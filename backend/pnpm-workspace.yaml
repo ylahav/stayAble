@@ -15,5 +15,6 @@ minimumReleaseAgeExclude:
   - '@payloadcms/next@3.90.0'
   - '@payloadcms/ui@3.90.0'
   - '@payloadcms/richtext-lexical@3.90.0'
+  - '@yairl/payload-schema-export@0.1.0'
 
 trustLockfile: true
