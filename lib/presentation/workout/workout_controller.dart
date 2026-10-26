@@ -3,11 +3,18 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/timer_chime.dart';
+import '../../core/time/countdown.dart';
 import '../../domain/domain.dart';
 import '../auth/auth_controller.dart';
 import '../providers.dart';
 
 enum WorkoutPhase { picking, ready, timed, loggingSet, rest, effort, finished }
+
+/// Clock used by workout countdowns; overridden in tests.
+final workoutClockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
+
+/// How often a running countdown re-reads the clock.
+const _tickInterval = Duration(milliseconds: 250);
 
 class WorkoutViewState {
   const WorkoutViewState({
@@ -19,6 +26,7 @@ class WorkoutViewState {
     required this.loggedReps,
     required this.loggedLoadKg,
     this.selectedEffort,
+    this.endsAt,
   });
 
   final WorkoutPlayback playback;
@@ -29,6 +37,10 @@ class WorkoutViewState {
   final int loggedReps;
   final double loggedLoadKg;
   final PerceivedEffort? selectedEffort;
+
+  /// Deadline of the running countdown (timed set or rest), if any.
+  /// [remainingSeconds] is derived from it on every tick.
+  final DateTime? endsAt;
 
   ProgramExerciseItem get currentItem => playback.items[exerciseIndex];
   WorkoutExerciseResult get currentResult => playback.results[exerciseIndex];
@@ -57,6 +69,8 @@ class WorkoutViewState {
     double? loggedLoadKg,
     PerceivedEffort? selectedEffort,
     bool clearEffort = false,
+    DateTime? endsAt,
+    bool clearEndsAt = false,
   }) {
     return WorkoutViewState(
       playback: playback ?? this.playback,
@@ -68,6 +82,7 @@ class WorkoutViewState {
       loggedLoadKg: loggedLoadKg ?? this.loggedLoadKg,
       selectedEffort:
           clearEffort ? null : (selectedEffort ?? this.selectedEffort),
+      endsAt: clearEndsAt ? null : (endsAt ?? this.endsAt),
     );
   }
 }
@@ -177,8 +192,17 @@ class WorkoutController extends AsyncNotifier<WorkoutViewState> {
     if (current == null) return;
     unawaited(TimerChime.warmUp());
     if (current.currentItem.assignment.isTimed) {
-      _startTimer();
-      state = AsyncData(current.copyWith(phase: WorkoutPhase.timed));
+      final seconds = current.plannedSeconds;
+      state = AsyncData(
+        current.copyWith(
+          phase: WorkoutPhase.timed,
+          remainingSeconds: seconds,
+          endsAt: _now().add(Duration(seconds: seconds)),
+        ),
+      );
+      _runCountdown(WorkoutPhase.timed, onDone: (done) {
+        unawaited(completeTimedSet(seconds: done.plannedSeconds));
+      });
     } else {
       state = AsyncData(current.copyWith(phase: WorkoutPhase.loggingSet));
     }
@@ -202,23 +226,43 @@ class WorkoutController extends AsyncNotifier<WorkoutViewState> {
     state = AsyncData(current.copyWith(phase: WorkoutPhase.picking));
   }
 
-  void _startTimer() {
+  DateTime _now() => ref.read(workoutClockProvider)();
+
+  /// Runs the countdown in `state.endsAt` while the workout stays in [phase].
+  ///
+  /// Each tick re-reads the clock instead of subtracting a second, so a
+  /// countdown the OS paused in the background catches up — or finishes —
+  /// on the first tick after the app resumes.
+  void _runCountdown(
+    WorkoutPhase phase, {
+    required void Function(WorkoutViewState current) onDone,
+  }) {
     _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      final current = state.value;
-      if (current == null || current.phase != WorkoutPhase.timed) return;
-      if (current.remainingSeconds <= 1) {
-        _timer?.cancel();
-        unawaited(TimerChime.playEnd());
-        unawaited(completeTimedSet(seconds: current.plannedSeconds));
-        return;
-      }
-      final remaining = current.remainingSeconds - 1;
-      if (remaining <= 3) {
-        unawaited(TimerChime.playTick());
-      }
-      state = AsyncData(current.copyWith(remainingSeconds: remaining));
-    });
+    _timer = Timer.periodic(_tickInterval, (_) => _tick(phase, onDone));
+  }
+
+  void _tick(
+    WorkoutPhase phase,
+    void Function(WorkoutViewState current) onDone,
+  ) {
+    final current = state.value;
+    final endsAt = current?.endsAt;
+    if (current == null || current.phase != phase || endsAt == null) {
+      _timer?.cancel();
+      return;
+    }
+    final left = secondsUntil(endsAt, _now());
+    if (left <= 0) {
+      _timer?.cancel();
+      unawaited(TimerChime.playEnd());
+      onDone(current);
+      return;
+    }
+    if (left == current.remainingSeconds) return;
+    if (left <= 3) {
+      unawaited(TimerChime.playTick());
+    }
+    state = AsyncData(current.copyWith(remainingSeconds: left));
   }
 
   void adjustReps(int delta) {
@@ -249,9 +293,12 @@ class WorkoutController extends AsyncNotifier<WorkoutViewState> {
     final current = state.value;
     if (current == null) return;
     _timer?.cancel();
+    final endsAt = current.endsAt;
+    final remaining = endsAt == null
+        ? current.remainingSeconds
+        : secondsUntil(endsAt, _now());
     final actual = seconds ??
-        (current.plannedSeconds - current.remainingSeconds)
-            .clamp(0, current.plannedSeconds);
+        (current.plannedSeconds - remaining).clamp(0, current.plannedSeconds);
     final set = current.currentSet.copyWith(
       actualDuration: actual,
       completed: true,
@@ -329,43 +376,33 @@ class WorkoutController extends AsyncNotifier<WorkoutViewState> {
   }
 
   void _startRestTimer() {
-    _timer?.cancel();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      final current = state.value;
-      if (current == null || current.phase != WorkoutPhase.rest) return;
-      if (current.remainingSeconds <= 1) {
-        _timer?.cancel();
-        unawaited(TimerChime.playEnd());
-        state = AsyncData(
-          current.copyWith(
-            phase: WorkoutPhase.ready,
-            remainingSeconds: current.currentItem.assignment.duration ?? 0,
-            loggedReps: current.currentItem.assignment.repetitions ?? 0,
-            loggedLoadKg: current.currentItem.assignment.loadKg ?? 0,
-          ),
-        );
-        return;
-      }
-      final remaining = current.remainingSeconds - 1;
-      if (remaining <= 3) {
-        unawaited(TimerChime.playTick());
-      }
-      state = AsyncData(current.copyWith(remainingSeconds: remaining));
+    final current = state.value;
+    if (current == null || current.phase != WorkoutPhase.rest) return;
+    state = AsyncData(
+      current.copyWith(
+        endsAt: _now().add(Duration(seconds: current.remainingSeconds)),
+      ),
+    );
+    _runCountdown(WorkoutPhase.rest, onDone: (done) {
+      state = AsyncData(_readyAfterRest(done));
     });
+  }
+
+  WorkoutViewState _readyAfterRest(WorkoutViewState current) {
+    return current.copyWith(
+      phase: WorkoutPhase.ready,
+      remainingSeconds: current.currentItem.assignment.duration ?? 0,
+      loggedReps: current.currentItem.assignment.repetitions ?? 0,
+      loggedLoadKg: current.currentItem.assignment.loadKg ?? 0,
+      clearEndsAt: true,
+    );
   }
 
   void skipRest() {
     _timer?.cancel();
     final current = state.value;
     if (current == null) return;
-    state = AsyncData(
-      current.copyWith(
-        phase: WorkoutPhase.ready,
-        remainingSeconds: current.currentItem.assignment.duration ?? 0,
-        loggedReps: current.currentItem.assignment.repetitions ?? 0,
-        loggedLoadKg: current.currentItem.assignment.loadKg ?? 0,
-      ),
-    );
+    state = AsyncData(_readyAfterRest(current));
   }
 
   void selectEffort(PerceivedEffort effort) {
