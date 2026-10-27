@@ -63,7 +63,9 @@ void main() {
       trainingVenue: ExerciseVenue.home,
     );
 
-    expect(body['birthDate'], '1986-09-25');
+    // Midnight UTC of the day: the same instant the old date-only string
+    // was stored as.
+    expect(body['birthDate'], '1986-09-25T00:00:00.000Z');
     expect(body['age'], isNotNull);
     expect(body['goals'], ['bodyToning']);
     expect(body['assessment'], assessment.toJson());

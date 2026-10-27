@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:payload_client/payload_client.dart'
-    show CollectionRef, FindOptions, PayloadClient, PayloadException;
+    show CollectionRef, FindOptions, PayloadClient, PayloadException, Ref;
 
 import '../../domain/domain.dart';
 import '../../payload/models.dart';
@@ -26,8 +26,11 @@ class PayloadApi {
 
   /// A payload_client for one call, on this API's shared http.Client.
   /// Each call carries its own token, as the methods here always have.
-  PayloadClient _cms([String? token]) =>
-      PayloadClient(baseUrl: Uri.parse(baseUrl), token: token, httpClient: _client);
+  PayloadClient _cms([String? token]) => PayloadClient(
+    baseUrl: Uri.parse(baseUrl),
+    token: token,
+    httpClient: _client,
+  );
 
   /// Runs a payload_client call with the timeout and errors this API has
   /// always had: [AuthException] for auth, network and server failures.
@@ -132,7 +135,9 @@ class PayloadApi {
     if (docs is List) {
       for (final doc in docs) {
         if (doc is Map && doc['clientId'] is String) {
-          items.add(exerciseFromPayload(Map<String, dynamic>.from(doc), baseUrl));
+          items.add(
+            exerciseFromPayload(Map<String, dynamic>.from(doc), baseUrl),
+          );
         }
       }
     }
@@ -183,10 +188,10 @@ class PayloadApi {
         CollectionRef.raw(Collections.users.slug),
         userId,
         athleteProfilePayload(
-        birthDate: birthDate,
-        assessment: assessment,
-        fitnessLevel: fitnessLevel,
-        goals: goals,
+          birthDate: birthDate,
+          assessment: assessment,
+          fitnessLevel: fitnessLevel,
+          goals: goals,
           trainingVenue: trainingVenue,
         ),
       ),
@@ -209,9 +214,6 @@ class PayloadApi {
       collection: Collections.workoutSessions.slug,
       clientId: playback.session.id,
     );
-    // The session goes up as a JSON map built by _sessionPayload: writes
-    // aren't typed yet (generated classes need an id, which a new document
-    // doesn't have).
     final sessions = CollectionRef.raw(Collections.workoutSessions.slug);
     if (existingId == null) {
       await _guard(() => _cms(token).create(sessions, payload));
@@ -220,69 +222,67 @@ class PayloadApi {
     await _guard(() => _cms(token).update(sessions, existingId, payload));
   }
 
-  Map<String, dynamic> _sessionPayload(
+  /// The workout as Payload's workout-sessions collection takes it, built
+  /// with the generated input builders so every field name and type is
+  /// checked against the schema.
+  Map<String, Object?> _sessionPayload(
     WorkoutPlayback playback,
     Map<String, String> exerciseIds,
     String? programId,
   ) {
     final session = playback.session;
-    return {
-      'clientId': session.id,
-      'deleted': false,
-      'program': ?programId,
-      'programDayClientId': playback.day.id,
-      'startedAt': session.startedAt.toUtc().toIso8601String(),
-      if (session.completedAt != null)
-        'completedAt': session.completedAt!.toUtc().toIso8601String(),
-      if (session.duration != null) 'duration': session.duration,
-      'status': session.status.name,
-      if (session.notes != null) 'notes': session.notes,
-      if (session.totalVolumeKg != null) 'totalVolumeKg': session.totalVolumeKg,
-      'exercises': [
+    return CmsWorkoutSession.input(
+      clientId: session.id,
+      deleted: false,
+      program: programId == null ? null : Ref.id(programId),
+      programDayClientId: playback.day.id,
+      startedAt: session.startedAt,
+      completedAt: session.completedAt,
+      duration: session.duration,
+      status: CmsWorkoutSessionStatus(session.status.name),
+      notes: session.notes,
+      totalVolumeKg: session.totalVolumeKg,
+      exercises: [
         for (final result in playback.results)
-          if (exerciseIds[result.exerciseId] != null)
-            {
-              'clientId': result.id,
-              'exercise': exerciseIds[result.exerciseId],
-              'programExerciseClientId': result.programExerciseId,
-              'sortOrder': result.order,
-              'plannedSets': result.plannedSets,
-              'actualSets': result.actualSets,
-              if (result.plannedRepetitions != null)
-                'plannedRepetitions': result.plannedRepetitions,
-              if (result.actualRepetitions != null)
-                'actualRepetitions': result.actualRepetitions,
-              if (result.plannedDuration != null)
-                'plannedDuration': result.plannedDuration,
-              if (result.actualDuration != null)
-                'actualDuration': result.actualDuration,
-              'completed': result.completed,
-              if (result.effort != null) 'effort': result.effort!.name,
-              if (result.notes != null) 'notes': result.notes,
-              'personalRecord': result.personalRecord,
-              'sets': [
+          // An exercise the server doesn't know can't be referenced.
+          if (exerciseIds[result.exerciseId] case final exerciseId?)
+            CmsWorkoutSessionExercise(
+              clientId: result.id,
+              exercise: Ref.id(exerciseId),
+              programExerciseClientId: result.programExerciseId,
+              sortOrder: result.order,
+              plannedSets: result.plannedSets,
+              actualSets: result.actualSets,
+              plannedRepetitions: result.plannedRepetitions,
+              actualRepetitions: result.actualRepetitions,
+              plannedDuration: result.plannedDuration,
+              actualDuration: result.actualDuration,
+              completed: result.completed,
+              effort: switch (result.effort) {
+                final effort? => CmsWorkoutSessionExerciseEffort(effort.name),
+                null => null,
+              },
+              notes: result.notes,
+              personalRecord: result.personalRecord,
+              sets: [
                 for (final set
                     in playback.setsByResult[result.id] ??
                         const <WorkoutSetResult>[])
-                  {
-                    'clientId': set.id,
-                    'setNumber': set.setNumber,
-                    if (set.plannedReps != null) 'plannedReps': set.plannedReps,
-                    if (set.actualReps != null) 'actualReps': set.actualReps,
-                    if (set.plannedDuration != null)
-                      'plannedDuration': set.plannedDuration,
-                    if (set.actualDuration != null)
-                      'actualDuration': set.actualDuration,
-                    if (set.plannedLoadKg != null)
-                      'plannedLoadKg': set.plannedLoadKg,
-                    if (set.actualLoadKg != null)
-                      'actualLoadKg': set.actualLoadKg,
-                    'completed': set.completed,
-                  },
+                  CmsWorkoutSessionExerciseSet(
+                    clientId: set.id,
+                    setNumber: set.setNumber,
+                    plannedReps: set.plannedReps,
+                    actualReps: set.actualReps,
+                    plannedDuration: set.plannedDuration,
+                    actualDuration: set.actualDuration,
+                    plannedLoadKg: set.plannedLoadKg,
+                    actualLoadKg: set.actualLoadKg,
+                    completed: set.completed,
+                  ),
               ],
-            },
+            ),
       ],
-    };
+    );
   }
 
   Future<Map<String, String>> _exerciseIdMap(String token) async {
@@ -292,10 +292,7 @@ class PayloadApi {
         options: const FindOptions(limit: 100, depth: 0, pagination: false),
       ),
     );
-    return {
-      for (final doc in page.docs)
-        if (doc.clientId case final clientId?) clientId: doc.id,
-    };
+    return {for (final doc in page.docs) ?doc.clientId: doc.id};
   }
 
   /// The Payload id of the document with [clientId], from any collection
@@ -335,7 +332,10 @@ class PayloadApi {
   Future<http.Response?> _getPublicOrNull(List<String> paths) async {
     for (final path in paths) {
       final body = await _send(
-        () => _client.get(_uri(path), headers: const {'Accept': 'application/json'}),
+        () => _client.get(
+          _uri(path),
+          headers: const {'Accept': 'application/json'},
+        ),
       );
       if (body.statusCode >= 200 && body.statusCode < 300) return body;
       if (!_isMissingPublicRoute(body.statusCode)) {

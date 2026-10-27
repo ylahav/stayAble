@@ -198,7 +198,7 @@ void main() {
       trainingVenue: ExerciseVenue.home,
     );
     final body = jsonDecode(requests.single.body) as Map;
-    expect(body['birthDate'], '1986-09-25');
+    expect(body['birthDate'], '1986-09-25T00:00:00.000Z');
     expect(body['goals'], ['strength']);
   });
 

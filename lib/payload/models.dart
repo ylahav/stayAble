@@ -38,6 +38,87 @@ abstract final class Collections {
   );
 }
 
+/// The site's custom endpoints, for `client.callRoute`.
+abstract final class Routes {
+  /// `GET /api/public-catalog`
+  static const getPublicCatalog = RouteInfo(
+    method: 'get',
+    path: '/api/public-catalog',
+  );
+
+  /// `GET /api/public-catalog-status`
+  static const getPublicCatalogStatus = RouteInfo(
+    method: 'get',
+    path: '/api/public-catalog-status',
+  );
+
+  /// `GET /api/db-backup/collections`
+  static const getDbBackupCollections = RouteInfo(
+    method: 'get',
+    path: '/api/db-backup/collections',
+  );
+
+  /// `POST /api/db-backup/export`
+  static const postDbBackupExport = RouteInfo(
+    method: 'post',
+    path: '/api/db-backup/export',
+  );
+
+  /// `POST /api/db-backup/import`
+  static const postDbBackupImport = RouteInfo(
+    method: 'post',
+    path: '/api/db-backup/import',
+  );
+
+  /// `POST /api/media/catalog-export`
+  static const postMediaCatalogExport = RouteInfo(
+    method: 'post',
+    path: '/api/media/catalog-export',
+  );
+
+  /// `POST /api/media/catalog-import`
+  static const postMediaCatalogImport = RouteInfo(
+    method: 'post',
+    path: '/api/media/catalog-import',
+  );
+
+  /// `POST /api/exercises/catalog-export`
+  static const postExercisesCatalogExport = RouteInfo(
+    method: 'post',
+    path: '/api/exercises/catalog-export',
+  );
+
+  /// `POST /api/exercises/catalog-import`
+  static const postExercisesCatalogImport = RouteInfo(
+    method: 'post',
+    path: '/api/exercises/catalog-import',
+  );
+
+  /// `GET /api/exercises/public-catalog`
+  static const getExercisesPublicCatalog = RouteInfo(
+    method: 'get',
+    path: '/api/exercises/public-catalog',
+  );
+
+  /// `GET /api/exercises/public-catalog-status`
+  static const getExercisesPublicCatalogStatus = RouteInfo(
+    method: 'get',
+    path: '/api/exercises/public-catalog-status',
+  );
+
+  /// `POST /api/programs/catalog-export`
+  static const postProgramsCatalogExport = RouteInfo(
+    method: 'post',
+    path: '/api/programs/catalog-export',
+  );
+
+  /// `POST /api/programs/catalog-import`
+  static const postProgramsCatalogImport = RouteInfo(
+    method: 'post',
+    path: '/api/programs/catalog-import',
+  );
+}
+
 /// Decoders by collection slug, for polymorphic relationships.
 const Map<String, DocDecoder<Object>> payloadDecoders = {
   'users': CmsUser.fromJson,
@@ -172,6 +253,53 @@ final class CmsUser {
     if (active case final v?) 'active': v,
     if (updatedAt case final v?) 'updatedAt': PayloadJson.dateToJson(v),
     if (createdAt case final v?) 'createdAt': PayloadJson.dateToJson(v),
+    if (email case final v?) 'email': v,
+    if (sessions case final v?) 'sessions': [for (final e in v) e.toJson()],
+  };
+
+  /// JSON for `create` or `update`: only the arguments given,
+  /// encoded as Payload expects. `id`, `createdAt` and `updatedAt`
+  /// are the server's, so they aren't arguments.
+  static Map<String, Object?> input({
+    String? name,
+    List<CmsUserRoles>? roles,
+    String? photo,
+    DateTime? birthDate,
+    num? age,
+    num? weightKg,
+    CmsUserSex? sex,
+    CmsUserLevel? level,
+    String? conditionNotes,
+    CmsUserTrainingVenue? trainingVenue,
+    CmsUserPreferredUnits? preferredUnits,
+    num? defaultRestSeconds,
+    String? gender,
+    CmsUserFitnessLevel? fitnessLevel,
+    List<CmsUserGoals>? goals,
+    Object? assessment,
+    CmsUserLanguage? language,
+    bool? active,
+    String? email,
+    List<CmsUserSession>? sessions,
+  }) => {
+    if (name case final v?) 'name': v,
+    if (roles case final v?) 'roles': [for (final e in v) e.value],
+    if (photo case final v?) 'photo': v,
+    if (birthDate case final v?) 'birthDate': PayloadJson.dateToJson(v),
+    if (age case final v?) 'age': v,
+    if (weightKg case final v?) 'weightKg': v,
+    if (sex case final v?) 'sex': v.value,
+    if (level case final v?) 'level': v.value,
+    if (conditionNotes case final v?) 'conditionNotes': v,
+    if (trainingVenue case final v?) 'trainingVenue': v.value,
+    if (preferredUnits case final v?) 'preferredUnits': v.value,
+    if (defaultRestSeconds case final v?) 'defaultRestSeconds': v,
+    if (gender case final v?) 'gender': v,
+    if (fitnessLevel case final v?) 'fitnessLevel': v.value,
+    if (goals case final v?) 'goals': [for (final e in v) e.value],
+    if (assessment case final v?) 'assessment': v,
+    if (language case final v?) 'language': v.value,
+    if (active case final v?) 'active': v,
     if (email case final v?) 'email': v,
     if (sessions case final v?) 'sessions': [for (final e in v) e.toJson()],
   };
@@ -384,6 +512,35 @@ final class CmsMedia {
     if (focalX case final v?) 'focalX': v,
     if (focalY case final v?) 'focalY': v,
   };
+
+  /// JSON for `create` or `update`: only the arguments given,
+  /// encoded as Payload expects. `id`, `createdAt` and `updatedAt`
+  /// are the server's, so they aren't arguments.
+  static Map<String, Object?> input({
+    String? alt,
+    String? clientId,
+    String? url,
+    String? thumbnailURL,
+    String? filename,
+    String? mimeType,
+    num? filesize,
+    num? width,
+    num? height,
+    num? focalX,
+    num? focalY,
+  }) => {
+    if (alt case final v?) 'alt': v,
+    if (clientId case final v?) 'clientId': v,
+    if (url case final v?) 'url': v,
+    if (thumbnailURL case final v?) 'thumbnailURL': v,
+    if (filename case final v?) 'filename': v,
+    if (mimeType case final v?) 'mimeType': v,
+    if (filesize case final v?) 'filesize': v,
+    if (width case final v?) 'width': v,
+    if (height case final v?) 'height': v,
+    if (focalX case final v?) 'focalX': v,
+    if (focalY case final v?) 'focalY': v,
+  };
 }
 
 /// A document in the `exercises` collection.
@@ -505,6 +662,51 @@ final class CmsExercise {
     if (active case final v?) 'active': v,
     if (updatedAt case final v?) 'updatedAt': PayloadJson.dateToJson(v),
     if (createdAt case final v?) 'createdAt': PayloadJson.dateToJson(v),
+  };
+
+  /// JSON for `create` or `update`: only the arguments given,
+  /// encoded as Payload expects. `id`, `createdAt` and `updatedAt`
+  /// are the server's, so they aren't arguments.
+  static Map<String, Object?> input({
+    String? clientId,
+    String? adminTitle,
+    bool? deleted,
+    CmsExerciseName? name,
+    CmsExerciseDescription? description,
+    CmsExerciseInstructions? instructions,
+    CmsExerciseSafetyNotes? safetyNotes,
+    Ref<CmsMedia>? image,
+    String? photoPath,
+    CmsExerciseCategory? category,
+    CmsExerciseDifficulty? difficulty,
+    CmsExerciseVenue? venue,
+    CmsExerciseWorkoutType? workoutType,
+    num? gymNumber,
+    num? duration,
+    num? repetitions,
+    List<String>? targetMuscles,
+    CmsExerciseEquipment? equipment,
+    bool? active,
+  }) => {
+    if (clientId case final v?) 'clientId': v,
+    if (adminTitle case final v?) 'adminTitle': v,
+    if (deleted case final v?) 'deleted': v,
+    if (name case final v?) 'name': v.toJson(),
+    if (description case final v?) 'description': v.toJson(),
+    if (instructions case final v?) 'instructions': v.toJson(),
+    if (safetyNotes case final v?) 'safetyNotes': v.toJson(),
+    if (image case final v?) 'image': v.toJson(),
+    if (photoPath case final v?) 'photoPath': v,
+    if (category case final v?) 'category': v.value,
+    if (difficulty case final v?) 'difficulty': v.value,
+    if (venue case final v?) 'venue': v.value,
+    if (workoutType case final v?) 'workoutType': v.value,
+    if (gymNumber case final v?) 'gymNumber': v,
+    if (duration case final v?) 'duration': v,
+    if (repetitions case final v?) 'repetitions': v,
+    if (targetMuscles case final v?) 'targetMuscles': v,
+    if (equipment case final v?) 'equipment': v.value,
+    if (active case final v?) 'active': v,
   };
 }
 
@@ -742,6 +944,29 @@ final class CmsProgram {
     if (updatedAt case final v?) 'updatedAt': PayloadJson.dateToJson(v),
     if (createdAt case final v?) 'createdAt': PayloadJson.dateToJson(v),
   };
+
+  /// JSON for `create` or `update`: only the arguments given,
+  /// encoded as Payload expects. `id`, `createdAt` and `updatedAt`
+  /// are the server's, so they aren't arguments.
+  static Map<String, Object?> input({
+    String? clientId,
+    bool? deleted,
+    Ref<CmsUser>? owner,
+    String? name,
+    String? description,
+    bool? active,
+    CmsProgramVenue? venue,
+    List<CmsProgramExercise>? exercises,
+  }) => {
+    if (clientId case final v?) 'clientId': v,
+    if (deleted case final v?) 'deleted': v,
+    if (owner case final v?) 'owner': v.toJson(),
+    if (name case final v?) 'name': v,
+    if (description case final v?) 'description': v,
+    if (active case final v?) 'active': v,
+    if (venue case final v?) 'venue': v.value,
+    if (exercises case final v?) 'exercises': [for (final e in v) e.toJson()],
+  };
 }
 
 /// Values of `venue`. Unknown values are kept as they are.
@@ -912,6 +1137,39 @@ final class CmsProgramAssignment {
     if (updatedAt case final v?) 'updatedAt': PayloadJson.dateToJson(v),
     if (createdAt case final v?) 'createdAt': PayloadJson.dateToJson(v),
   };
+
+  /// JSON for `create` or `update`: only the arguments given,
+  /// encoded as Payload expects. `id`, `createdAt` and `updatedAt`
+  /// are the server's, so they aren't arguments.
+  static Map<String, Object?> input({
+    String? clientId,
+    String? adminTitle,
+    bool? deleted,
+    Ref<CmsProgram>? program,
+    Ref<CmsUser>? athlete,
+    Ref<CmsUser>? assignedBy,
+    CmsProgramAssignmentScheduleType? scheduleType,
+    DateTime? startDate,
+    DateTime? endDate,
+    bool? active,
+    List<CmsProgramAssignmentScheduleDay>? scheduleDays,
+    List<CmsProgramAssignmentRefinement>? refinements,
+  }) => {
+    if (clientId case final v?) 'clientId': v,
+    if (adminTitle case final v?) 'adminTitle': v,
+    if (deleted case final v?) 'deleted': v,
+    if (program case final v?) 'program': v.toJson(),
+    if (athlete case final v?) 'athlete': v.toJson(),
+    if (assignedBy case final v?) 'assignedBy': v.toJson(),
+    if (scheduleType case final v?) 'scheduleType': v.value,
+    if (startDate case final v?) 'startDate': PayloadJson.dateToJson(v),
+    if (endDate case final v?) 'endDate': PayloadJson.dateToJson(v),
+    if (active case final v?) 'active': v,
+    if (scheduleDays case final v?)
+      'scheduleDays': [for (final e in v) e.toJson()],
+    if (refinements case final v?)
+      'refinements': [for (final e in v) e.toJson()],
+  };
 }
 
 /// Values of `scheduleType`. Unknown values are kept as they are.
@@ -1079,6 +1337,31 @@ final class CmsTrainerClient {
     if (updatedAt case final v?) 'updatedAt': PayloadJson.dateToJson(v),
     if (createdAt case final v?) 'createdAt': PayloadJson.dateToJson(v),
   };
+
+  /// JSON for `create` or `update`: only the arguments given,
+  /// encoded as Payload expects. `id`, `createdAt` and `updatedAt`
+  /// are the server's, so they aren't arguments.
+  static Map<String, Object?> input({
+    String? clientId,
+    String? adminTitle,
+    bool? deleted,
+    Ref<CmsUser>? trainer,
+    Ref<CmsUser>? athlete,
+    CmsTrainerClientStatus? status,
+    DateTime? invitedAt,
+    DateTime? acceptedAt,
+    DateTime? endedAt,
+  }) => {
+    if (clientId case final v?) 'clientId': v,
+    if (adminTitle case final v?) 'adminTitle': v,
+    if (deleted case final v?) 'deleted': v,
+    if (trainer case final v?) 'trainer': v.toJson(),
+    if (athlete case final v?) 'athlete': v.toJson(),
+    if (status case final v?) 'status': v.value,
+    if (invitedAt case final v?) 'invitedAt': PayloadJson.dateToJson(v),
+    if (acceptedAt case final v?) 'acceptedAt': PayloadJson.dateToJson(v),
+    if (endedAt case final v?) 'endedAt': PayloadJson.dateToJson(v),
+  };
 }
 
 /// Values of `status`. Unknown values are kept as they are.
@@ -1182,6 +1465,41 @@ final class CmsWorkoutSession {
     if (exercises case final v?) 'exercises': [for (final e in v) e.toJson()],
     if (updatedAt case final v?) 'updatedAt': PayloadJson.dateToJson(v),
     if (createdAt case final v?) 'createdAt': PayloadJson.dateToJson(v),
+  };
+
+  /// JSON for `create` or `update`: only the arguments given,
+  /// encoded as Payload expects. `id`, `createdAt` and `updatedAt`
+  /// are the server's, so they aren't arguments.
+  static Map<String, Object?> input({
+    String? clientId,
+    String? adminTitle,
+    bool? deleted,
+    Ref<CmsUser>? athlete,
+    Ref<CmsProgram>? program,
+    String? programDayClientId,
+    DateTime? startedAt,
+    DateTime? completedAt,
+    num? duration,
+    CmsWorkoutSessionStatus? status,
+    String? notes,
+    num? totalVolumeKg,
+    String? activeDeviceId,
+    List<CmsWorkoutSessionExercise>? exercises,
+  }) => {
+    if (clientId case final v?) 'clientId': v,
+    if (adminTitle case final v?) 'adminTitle': v,
+    if (deleted case final v?) 'deleted': v,
+    if (athlete case final v?) 'athlete': v.toJson(),
+    if (program case final v?) 'program': v.toJson(),
+    if (programDayClientId case final v?) 'programDayClientId': v,
+    if (startedAt case final v?) 'startedAt': PayloadJson.dateToJson(v),
+    if (completedAt case final v?) 'completedAt': PayloadJson.dateToJson(v),
+    if (duration case final v?) 'duration': v,
+    if (status case final v?) 'status': v.value,
+    if (notes case final v?) 'notes': v,
+    if (totalVolumeKg case final v?) 'totalVolumeKg': v,
+    if (activeDeviceId case final v?) 'activeDeviceId': v,
+    if (exercises case final v?) 'exercises': [for (final e in v) e.toJson()],
   };
 }
 
@@ -1489,6 +1807,61 @@ final class CmsBodyMeasurement {
     if (raw case final v?) 'raw': v,
     if (updatedAt case final v?) 'updatedAt': PayloadJson.dateToJson(v),
     if (createdAt case final v?) 'createdAt': PayloadJson.dateToJson(v),
+  };
+
+  /// JSON for `create` or `update`: only the arguments given,
+  /// encoded as Payload expects. `id`, `createdAt` and `updatedAt`
+  /// are the server's, so they aren't arguments.
+  static Map<String, Object?> input({
+    String? adminTitle,
+    bool? deleted,
+    Ref<CmsUser>? athlete,
+    DateTime? measuredAt,
+    CmsBodyMeasurementSource? source,
+    String? sourceUserId,
+    String? filename,
+    num? heightCm,
+    num? age,
+    num? weightKg,
+    num? bmi,
+    num? bodyFatPercent,
+    num? fatMassKg,
+    num? fatFreeMassKg,
+    num? muscleMassKg,
+    num? boneMassKg,
+    num? proteinKg,
+    num? bodyWaterPercent,
+    num? bodyWaterKg,
+    num? bmrKcal,
+    num? bmrKj,
+    num? metabolicAge,
+    num? visceralFat,
+    Object? raw,
+  }) => {
+    if (adminTitle case final v?) 'adminTitle': v,
+    if (deleted case final v?) 'deleted': v,
+    if (athlete case final v?) 'athlete': v.toJson(),
+    if (measuredAt case final v?) 'measuredAt': PayloadJson.dateToJson(v),
+    if (source case final v?) 'source': v.value,
+    if (sourceUserId case final v?) 'sourceUserId': v,
+    if (filename case final v?) 'filename': v,
+    if (heightCm case final v?) 'heightCm': v,
+    if (age case final v?) 'age': v,
+    if (weightKg case final v?) 'weightKg': v,
+    if (bmi case final v?) 'bmi': v,
+    if (bodyFatPercent case final v?) 'bodyFatPercent': v,
+    if (fatMassKg case final v?) 'fatMassKg': v,
+    if (fatFreeMassKg case final v?) 'fatFreeMassKg': v,
+    if (muscleMassKg case final v?) 'muscleMassKg': v,
+    if (boneMassKg case final v?) 'boneMassKg': v,
+    if (proteinKg case final v?) 'proteinKg': v,
+    if (bodyWaterPercent case final v?) 'bodyWaterPercent': v,
+    if (bodyWaterKg case final v?) 'bodyWaterKg': v,
+    if (bmrKcal case final v?) 'bmrKcal': v,
+    if (bmrKj case final v?) 'bmrKj': v,
+    if (metabolicAge case final v?) 'metabolicAge': v,
+    if (visceralFat case final v?) 'visceralFat': v,
+    if (raw case final v?) 'raw': v,
   };
 }
 
